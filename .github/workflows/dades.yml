@@ -112,6 +112,22 @@ jobs:
                   except Exception as exc:
                       availability["leagues"].append({"id":league,"ok":False,"error":str(exc)[:180]})
                       print(f"Baixes lliga {league} no disponibles: {exc}")
+              # Seleccions: localitza les seleccions absolutes i consulta les baixes.
+              for country in ("Belgium","Italy","Spain","England"):
+                  try:
+                      url = "https://v3.football.api-sports.io/teams?search=" + country
+                      req = urllib.request.Request(url, headers={"x-apisports-key":api_key, "User-Agent":"QuiniGol/1.0"})
+                      payload = json.loads(urllib.request.urlopen(req, timeout=45).read().decode("utf-8"))
+                      national = next((x.get("team") for x in payload.get("response",[]) if (x.get("team") or {}).get("national")), None)
+                      if not national: continue
+                      url = f"https://v3.football.api-sports.io/injuries?team={national.get('id')}&season={season_start}"
+                      req = urllib.request.Request(url, headers={"x-apisports-key":api_key, "User-Agent":"QuiniGol/1.0"})
+                      payload = json.loads(urllib.request.urlopen(req, timeout=45).read().decode("utf-8"))
+                      for item in payload.get("response",[]):
+                          player = item.get("player") or {}; fixture = item.get("fixture") or {}
+                          availability["absences"].append({"league":"INT","team":country,"player":player.get("name",""),"type":player.get("type") or "baixa","date":fixture.get("date",""),"status":player.get("type") or "no especificat"})
+                      print(f"Baixes selecció {country}: consultades")
+                  except Exception as exc: print(f"Baixes selecció {country} no disponibles: {exc}")
           else:
               print("API_FOOTBALL_KEY no configurada: baixes no disponibles.")
           with open("data/availability.json","w",encoding="utf-8") as out:
