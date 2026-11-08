@@ -23,7 +23,7 @@ jobs:
           page_url = "https://www.loteriasyapuestas.es/es/avisos-de-interes"
           req = urllib.request.Request(page_url, headers={"User-Agent":"Mozilla/5.0 QuiniGol/1.0"})
           page = urllib.request.urlopen(req, timeout=45).read().decode("utf-8", "replace")
-          links = re.findall(r'href=["\\']([^"\\']+\\.zip[^"\\']*)["\\']', page, re.I)
+          links = re.findall(r"""href=["']([^"']+\.zip[^"']*)["']""", page, re.I)
           links = [html.unescape(x.replace("&amp;","&")) for x in links if "COMPOSICION" in html.unescape(x).upper() or "COMPOSICI" in html.unescape(x).upper()]
           if not links:
               raise SystemExit("No s'ha trobat el ZIP oficial de composició de butlletins.")
@@ -37,22 +37,22 @@ jobs:
               if not name.lower().endswith(".pdf"): continue
               try:
                   reader = PdfReader(io.BytesIO(archive.read(name)))
-                  raw = "\\n".join((p.extract_text() or "") for p in reader.pages)
+                  raw = "\n".join((p.extract_text() or "") for p in reader.pages)
               except Exception:
                   continue
               norm = unicodedata.normalize("NFKD", raw).encode("ascii","ignore").decode().upper()
               if "QUINIELA" not in norm or "COMPOSICION" not in norm: continue
-              lines = [re.sub(r"\\s+"," ",x).strip() for x in raw.splitlines() if x.strip()]
-              jornada = re.search(r"JORNADA\\s*(\\d+)\\s*[ªA]?", norm)
+              lines = [re.sub(r"\s+"," ",x).strip() for x in raw.splitlines() if x.strip()]
+              jornada = re.search(r"JORNADA\s*(\d+)\s*[ªA]?", norm)
               matches = {}
               for i,line in enumerate(lines):
-                  m = re.match(r"^\\s*(P?15|(?:[1-9]|1[0-4]))\\s*(?:[|.]\\s*)?(.*)$", line, re.I)
+                  m = re.match(r"^\s*(P?15|(?:[1-9]|1[0-4]))\s*(?:[|.]\s*)?(.*)$", line, re.I)
                   if not m: continue
                   n = 15 if m.group(1).upper()=="P15" else int(m.group(1))
                   rest = m.group(2).strip()
                   chunk = " ".join([rest]+lines[i+1:i+5])
-                  chunk = re.sub(r"\\s*\\|\\s*", " | ", chunk)
-                  pair = re.search(r"([A-ZÁÉÍÓÚÜÑ0-9 .()'’&/]+?)\\s+-\\s+([A-ZÁÉÍÓÚÜÑ0-9 .()'’&/]+?)(?=\\s+(?:P?15|(?:[1-9]|1[0-4]))\\s|$)", chunk, re.I)
+                  chunk = re.sub(r"\s*\|\s*", " | ", chunk)
+                  pair = re.search(r"([A-ZÁÉÍÓÚÜÑ0-9 .()'’&/]+?)\s+-\s+([A-ZÁÉÍÓÚÜÑ0-9 .()'’&/]+?)(?=\s+(?:P?15|(?:[1-9]|1[0-4]))\s|$)", chunk, re.I)
                   if not pair:
                       bits = [x.strip() for x in chunk.split("|") if x.strip()]
                       if len(bits)>=3 and bits[1]=="-": pair=(None)
@@ -61,7 +61,7 @@ jobs:
                       else: continue
                   else:
                       home,away=pair.group(1).strip(" |-"),pair.group(2).strip(" |-")
-                  home=re.sub(r"^(?:P?15|(?:[1-9]|1[0-4]))\\s+","",home).strip()
+                  home=re.sub(r"^(?:P?15|(?:[1-9]|1[0-4]))\s+","",home).strip()
                   if home and away and home!="-" and away!="-":
                       matches[n]={"home":home,"away":away}
               if len(matches)==15:
@@ -70,7 +70,7 @@ jobs:
               raise SystemExit("No s'han pogut extreure els 15 partits del PDF oficial; no es modifica la jornada publicada.")
           found.sort(key=lambda x:x[0], reverse=True)
           j,name,raw,matches=found[0]
-          date_match=re.search(r"(\\d{1,2}\\s*(?:-|/|DE)\\s*\\d{1,2}\\s*(?:DE)?\\s*[A-ZÁÉÍÓÚ]+\\s+DE\\s+20\\d{2})", unicodedata.normalize("NFKD",raw).encode("ascii","ignore").decode().upper())
+          date_match=re.search(r"(\d{1,2}\s*(?:-|/|DE)\s*\d{1,2}\s*(?:DE)?\s*[A-ZÁÉÍÓÚ]+\s+DE\s+20\d{2})", unicodedata.normalize("NFKD",raw).encode("ascii","ignore").decode().upper())
           result={"journey":str(j),"date":date_match.group(1).title() if date_match else "","matches":[{"number":i,"home":matches[i]["home"],"away":matches[i]["away"]} for i in range(1,16)],"source":"SELAE","updated":__import__("datetime").datetime.utcnow().isoformat()+"Z"}
           os.makedirs("data",exist_ok=True)
           with open("data/quiniela.json","w",encoding="utf-8") as f: json.dump(result,f,ensure_ascii=False,indent=2)
