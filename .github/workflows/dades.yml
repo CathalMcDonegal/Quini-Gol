@@ -1,7 +1,7 @@
 name: Actualitza dades
 on:
   schedule:
-    - cron: '0 7 * * 0'
+    - cron: '0 7 * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -52,43 +52,50 @@ jobs:
               with open(f"data/{league}.json","w",encoding="utf-8") as out:
                   json.dump(rows,out,separators=(",",":"),ensure_ascii=False)
               print(f"{league}: {len(rows)} partits guardats; últim: {rows[-1][0]}")
-          # Seleccions masculines: resultats internacionals històrics (CC0, Mart Jürisoo).
-          req = urllib.request.Request("https://raw.githubusercontent.com/martj42/international_results/master/results.csv", headers={"User-Agent":"QuiniGol-data-updater/1.0"})
-          raw = urllib.request.urlopen(req, timeout=90).read()
-          reader = csv.DictReader(io.StringIO(raw.decode("utf-8-sig", errors="replace")))
-          intl = []
-          for row in reader:
-              date = (row.get("date") or "").strip()
-              try: dt = datetime.datetime.strptime(date, "%Y-%m-%d").date()
-              except ValueError: continue
-              if dt < today - datetime.timedelta(days=365*12): continue
-              try:
-                  hg, ag = int(row["home_score"]), int(row["away_score"])
-              except (ValueError, KeyError, TypeError): continue
-              home, away = (row.get("home_team") or "").strip(), (row.get("away_team") or "").strip()
-              if home and away: intl.append([dt.isoformat(), home, away, hg, ag])
-          if len(intl) < 1000: raise SystemExit("Dades internacionals incompletes; es conserva la versió anterior.")
-          with open("data/INT.json","w",encoding="utf-8") as out: json.dump(intl,out,separators=(",",":"),ensure_ascii=False)
-          print(f"INT: {len(intl)} partits internacionals des de {intl[0][0]}")
-          # Taula oficial de Liga F: gols a favor/en contra i partits jugats.
-          from bs4 import BeautifulSoup
-          url = "https://en.ligaf.es/matches/lav%C3%A9s"
-          req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0 QuiniGol/1.0"})
-          page = urllib.request.urlopen(req, timeout=60).read().decode("utf-8","replace")
-          soup = BeautifulSoup(page,"html.parser")
-          page_text = soup.get_text(" ",strip=True)
-          teams = ["FC Barcelona","Real Madrid CF","Madrid CFF","Atlético de Madrid","Athletic Club","Costa Adeje Tenerife","RCD Espanyol","SD Eibar","Deportivo Abanca","Granada CF","Real Sociedad","Logroño United","Sevilla FC","Deportivo Alavés","FC Badalona Women","VCF Femenino"]
-          stats = []
-          for team in teams:
-              pattern = re.escape(team) + r"\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)"
-              match = re.search(pattern,page_text,re.I)
-              if match:
-                  points, played, gf, ga = map(int,match.groups())
-                  if played > 0: stats.append({"team":team,"played":played,"gf":gf,"ga":ga})
-          if len(stats) < 14: raise SystemExit("No s'ha pogut llegir la classificació oficial de Liga F; no es publica una taula parcial.")
-          with open("data/LF.json","w",encoding="utf-8") as out: json.dump(stats,out,ensure_ascii=False,indent=2)
-          print(f"Liga F: {len(stats)} equips llegits de la classificació oficial.")
-          PY
+          # Fonts opcionals: si fallen, no bloquegen ni esborren SP1/SP2.
+          try:
+              req = urllib.request.Request("https://raw.githubusercontent.com/martj42/international_results/master/results.csv", headers={"User-Agent":"QuiniGol-data-updater/1.0"})
+              raw = urllib.request.urlopen(req, timeout=90).read()
+              reader = csv.DictReader(io.StringIO(raw.decode("utf-8-sig", errors="replace")))
+              intl = []
+              for row in reader:
+                  date = (row.get("date") or "").strip()
+                  try: dt = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+                  except ValueError: continue
+                  if dt < today - datetime.timedelta(days=365*8): continue
+                  try: hg, ag = int(row["home_score"]), int(row["away_score"])
+                  except (ValueError, KeyError, TypeError): continue
+                  home, away = (row.get("home_team") or "").strip(), (row.get("away_team") or "").strip()
+                  if home and away: intl.append([dt.isoformat(), home, away, hg, ag])
+              if len(intl) >= 300:
+                  with open("data/INT.json","w",encoding="utf-8") as out: json.dump(intl,out,separators=(",",":"),ensure_ascii=False)
+                  print(f"INT: {len(intl)} partits internacionals")
+              else: print("INT: dades insuficients; es conserva la versió anterior.")
+          except Exception as exc: print(f"INT opcional no disponible: {exc}")
+
+          # Lesions i sancions: API-Football (secret opcional API_FOOTBALL_KEY).
+          availability = {"updated": datetime.datetime.now(datetime.timezone.utc).isoformat(), "source": "API-Football", "configured": bool(os.environ.get("API_FOOTBALL_KEY")), "leagues": [], "absences": []}
+          api_key = os.environ.get("API_FOOTBALL_KEY")
+          if api_key:
+              for league in (140, 141, 142):
+                  try:
+                      url = f"https://v3.football.api-sports.io/injuries?league={league}&season={season_start}"
+                      req = urllib.request.Request(url, headers={"x-apisports-key":api_key, "User-Agent":"QuiniGol/1.0"})
+                      payload = json.loads(urllib.request.urlopen(req, timeout=60).read().decode("utf-8"))
+                      rows = payload.get("response", [])
+                      for item in rows:
+                          team = item.get("team") or {}; player = item.get("player") or {}; fixture = item.get("fixture") or {}
+                          availability["absences"].append({"league":league,"team":team.get("name",""),"player":player.get("name",""),"type":player.get("type") or "baixa","date":fixture.get("date",""),"status":player.get("type") or "no especificat"})
+                      availability["leagues"].append({"id":league,"count":len(rows),"ok":True})
+                      print(f"Baixes lliga {league}: {len(rows)}")
+                  except Exception as exc:
+                      availability["leagues"].append({"id":league,"ok":False,"error":str(exc)[:180]})
+                      print(f"Baixes lliga {league} no disponibles: {exc}")
+          else:
+              print("API_FOOTBALL_KEY no configurada: baixes no disponibles.")
+          with open("data/availability.json","w",encoding="utf-8") as out:
+              json.dump(availability,out,ensure_ascii=False,indent=2)
+          PYPY
       - name: Desa els canvis
         run: |
           git config user.name "dades-bot"
