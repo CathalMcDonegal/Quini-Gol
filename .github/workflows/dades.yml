@@ -1,8 +1,12 @@
 name: Actualitza dades
 on:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '0 7 * * 0'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/dades.yml'
 permissions:
   contents: write
 jobs:
@@ -12,36 +16,50 @@ jobs:
       - uses: actions/checkout@v4
       - name: Baixa i converteix els CSV
         run: |
+          set -e
           mkdir -p data
           python3 - <<'PY'
-          import csv, io, json, urllib.request, datetime
-          t = datetime.date.today()
-          y = t.year if t.month >= 7 else t.year - 1
-          codes = [f"{(y-1)%100:02d}{y%100:02d}", f"{y%100:02d}{(y+1)%100:02d}"]
-          def dt(s):
-              for f in ("%d/%m/%Y", "%d/%m/%y"):
-                  try: return datetime.datetime.strptime(s, f).strftime("%Y-%m-%d")
+          import csv, io, json, urllib.request, datetime, os
+          today = datetime.date.today()
+          season_start = today.year if today.month >= 7 else today.year - 1
+          seasons = [f"{(season_start-1)%100:02d}{season_start%100:02d}", f"{season_start%100:02d}{(season_start+1)%100:02d}"]
+          def parse_date(value):
+              for fmt in ("%d/%m/%Y", "%d/%m/%y"):
+                  try: return datetime.datetime.strptime(value, fmt).strftime("%Y-%m-%d")
                   except ValueError: pass
-          for lg in ("SP1", "SP2"):
-              rows = []
-              for c in codes:
+              return None
+          for league in ("SP1", "SP2"):
+              matches = {}
+              for season in seasons:
+                  url = f"https://www.football-data.co.uk/mmz4281/{season}/{league}.csv"
                   try:
-                      raw = urllib.request.urlopen(f"https://www.football-data.co.uk/mmz4281/{c}/{lg}.csv", timeout=30).read()
-                  except Exception as e:
-                      print(lg, c, "error", e); continue
-                  txt = raw.decode("utf-8-sig", errors="replace")
-                  for r in csv.DictReader(io.StringIO(txt)):
-                      d = dt((r.get("Date") or "").strip())
-                      if d and (r.get("FTHG") or "").strip() != "":
-                          rows.append([d, r["HomeTeam"], r["AwayTeam"], int(r["FTHG"]), int(r["FTAG"])])
-              if rows:
-                  rows.sort()
-                  json.dump(rows, open(f"data/{lg}.json", "w"), separators=(",", ":"), ensure_ascii=False)
-                  print(lg, len(rows), "partits")
+                      req = urllib.request.Request(url, headers={"User-Agent":"QuiniGol-data-updater/1.0"})
+                      raw = urllib.request.urlopen(req, timeout=45).read()
+                      reader = csv.DictReader(io.StringIO(raw.decode("utf-8-sig", errors="replace")))
+                      for row in reader:
+                          date = parse_date((row.get("Date") or "").strip())
+                          hg, ag = (row.get("FTHG") or "").strip(), (row.get("FTAG") or "").strip()
+                          home, away = (row.get("HomeTeam") or "").strip(), (row.get("AwayTeam") or "").strip()
+                          if date and hg.isdigit() and ag.isdigit() and home and away:
+                              matches[(date,home,away)] = [date,home,away,int(hg),int(ag)]
+                      print(f"{league} {season}: CSV llegit")
+                  except Exception as exc:
+                      print(f"{league} {season}: {exc}")
+              rows = sorted(matches.values())
+              if not rows:
+                  raise SystemExit(f"No s'han pogut obtenir dades vàlides per {league}; no es publica cap actualització.")
+              with open(f"data/{league}.json","w",encoding="utf-8") as out:
+                  json.dump(rows,out,separators=(",",":"),ensure_ascii=False)
+              print(f"{league}: {len(rows)} partits guardats; últim: {rows[-1][0]}")
           PY
       - name: Desa els canvis
         run: |
           git config user.name "dades-bot"
           git config user.email "dades-bot@users.noreply.github.com"
           git add data
-          git diff --cached --quiet || (git commit -m "Actualitza dades" && git push)
+          if ! git diff --cached --quiet; then
+            git commit -m "Actualitza resultats de les lligues"
+            git push
+          else
+            echo "Les dades ja estan actualitzades."
+          fi
