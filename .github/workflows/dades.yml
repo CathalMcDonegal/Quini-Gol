@@ -20,7 +20,7 @@ jobs:
           mkdir -p data
           python3 -m pip install --quiet beautifulsoup4
           python3 - <<'PY'
-          import csv, io, json, urllib.request, datetime, os
+          import csv, io, json, urllib.request, datetime, os, re
           today = datetime.date.today()
           season_start = today.year if today.month >= 7 else today.year - 1
           seasons = [f"{(season_start-1)%100:02d}{season_start%100:02d}", f"{season_start%100:02d}{(season_start+1)%100:02d}"]
