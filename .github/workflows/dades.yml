@@ -154,7 +154,7 @@ jobs:
               print(f"No s'ha pogut llegir el llistat públic de notícies de baixes: {exc}")
           with open("data/availability.json","w",encoding="utf-8") as out:
               json.dump(availability,out,ensure_ascii=False,indent=2)
-
+          PY
       - name: Desa els canvis
         run: |
           git config user.name "dades-bot"
