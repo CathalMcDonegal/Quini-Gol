@@ -44,6 +44,7 @@ function build(l){
  const rows=M[l],now=Date.now(),halfLife=l==='INT'?730:120,prior=l==='INT'?8:4;
  let sw=0,sh=0,sa=0,homeW=0,homeG=0,awayW=0,awayG=0;const T={};
  for(const[d,h,a,hg,ag]of rows){
+  if(!Number.isFinite(Date.parse(d))||Date.parse(d)>now)continue;
   const w=Math.pow(.5,(now-Date.parse(d))/864e5/halfLife);
   sw+=w;sh+=w*hg;sa+=w*ag;homeW+=w;homeG+=w*hg;awayW+=w;awayG+=w*ag;
   const x=T[h]||(T[h]={hw:0,hf:0,hc:0,aw:0,af:0,ac:0});
