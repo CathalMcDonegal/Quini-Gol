@@ -1,14 +1,14 @@
 [
   {
-    "team": "Barcelona W8 D0 L1 GF36 GA4",
-    "played": 9,
-    "gf": 36,
-    "ga": 4,
+    "team": "FC Barcelona",
+    "played": 10,
+    "gf": 41,
+    "ga": 5,
     "source": "FemGol",
-    "points": 24
+    "points": 27
   },
   {
-    "team": "Real Madrid W7 D2 L1 GF23 GA18",
+    "team": "Real Madrid CF",
     "played": 10,
     "gf": 23,
     "ga": 18,
@@ -16,15 +16,15 @@
     "points": 23
   },
   {
-    "team": "Madrid CFF W5 D2 L2 GF15 GA16",
-    "played": 9,
-    "gf": 15,
-    "ga": 16,
+    "team": "Madrid CFF",
+    "played": 10,
+    "gf": 16,
+    "ga": 21,
     "source": "FemGol",
     "points": 17
   },
   {
-    "team": "Atlético W5 D1 L3 GF19 GA12",
+    "team": "Atlético de Madrid",
     "played": 9,
     "gf": 19,
     "ga": 12,
@@ -32,7 +32,7 @@
     "points": 16
   },
   {
-    "team": "Athletic W4 D4 L2 GF13 GA11",
+    "team": "Athletic Club",
     "played": 10,
     "gf": 13,
     "ga": 11,
@@ -40,7 +40,7 @@
     "points": 16
   },
   {
-    "team": "Espanyol W4 D3 L3 GF14 GA11",
+    "team": "RCD Espanyol de Barcelona",
     "played": 10,
     "gf": 14,
     "ga": 11,
@@ -48,7 +48,7 @@
     "points": 15
   },
   {
-    "team": "Tenerife W4 D2 L3 GF14 GA14",
+    "team": "Costa Adeje Tenerife",
     "played": 9,
     "gf": 14,
     "ga": 14,
@@ -56,7 +56,7 @@
     "points": 14
   },
   {
-    "team": "Real Sociedad W3 D4 L3 GF13 GA15",
+    "team": "Real Sociedad",
     "played": 10,
     "gf": 13,
     "ga": 15,
@@ -64,7 +64,7 @@
     "points": 13
   },
   {
-    "team": "Eibar W3 D3 L4 GF10 GA13",
+    "team": "SD Eibar",
     "played": 10,
     "gf": 10,
     "ga": 13,
@@ -72,7 +72,7 @@
     "points": 12
   },
   {
-    "team": "Dépor W3 D2 L4 GF11 GA11",
+    "team": "Deportivo Abanca",
     "played": 9,
     "gf": 11,
     "ga": 11,
@@ -80,7 +80,7 @@
     "points": 11
   },
   {
-    "team": "Granada W3 D2 L5 GF9 GA16",
+    "team": "Granada CF",
     "played": 10,
     "gf": 9,
     "ga": 16,
@@ -88,7 +88,7 @@
     "points": 11
   },
   {
-    "team": "Logroño W3 D1 L6 GF11 GA14",
+    "team": "Logroño United",
     "played": 10,
     "gf": 11,
     "ga": 14,
@@ -96,7 +96,7 @@
     "points": 10
   },
   {
-    "team": "Sevilla W2 D4 L4 GF11 GA16",
+    "team": "Sevilla FC",
     "played": 10,
     "gf": 11,
     "ga": 16,
@@ -104,7 +104,7 @@
     "points": 10
   },
   {
-    "team": "Alavés W2 D2 L5 GF6 GA13",
+    "team": "Deportivo Alavés",
     "played": 9,
     "gf": 6,
     "ga": 13,
@@ -112,7 +112,7 @@
     "points": 8
   },
   {
-    "team": "Badalona W2 D2 L5 GF9 GA17",
+    "team": "FC Badalona Women",
     "played": 9,
     "gf": 9,
     "ga": 17,
@@ -120,7 +120,7 @@
     "points": 8
   },
   {
-    "team": "Valencia W1 D0 L8 GF6 GA19",
+    "team": "VCF Femenino",
     "played": 9,
     "gf": 6,
     "ga": 19,
