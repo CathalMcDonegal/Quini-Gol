@@ -73,10 +73,10 @@ function grid(lh,la){const f=[1];for(let i=1;i<11;i++)f[i]=f[i-1]*i;const p=(l,k
   g[i][j]=p(lh,i)*p(la,j)*t;s+=g[i][j]}}
  return g.map(r=>r.map(x=>x/s))}
 function predict(h,a){
- const alias={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England','Alavés (F)':'Deportivo Alavés','Eibar (F)':'SD Eibar','Real Sociedad (F)':'Real Sociedad','Athletic Club (F)':'Athletic Club','Sevilla (F)':'Sevilla FC','At. Madrid (F)':'Atlético de Madrid','Valencia (F)':'VCF Femenino','Granada (F)':'Granada CF'};
+ const alias={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England','Alavés (F)':'Alaves','Eibar (F)':'Eibar','Real Sociedad (F)':'Real Sociedad','Athletic Club (F)':'Athletic Club','Sevilla (F)':'Sevilla','At. Madrid (F)':'Atletico Madrid','Valencia (F)':'Valencia','Granada (F)':'Granada'};
  const hk=alias[h]||h,ak=alias[a]||a,lh=L[hk],la=L[ak];
  let lhg=1.38,lag=1.08,confidence='Orientativa',samples=0;
- if(lh&&la&&lh===la&&C[lh]?.T[hk]&&C[lh]?.T[ak]){
+ if(lh==='LF'&&la==='LF'&&C.LF?.T[hk]&&C.LF?.T[ak]){const m=C.LF,th=m.T[hk],ta=m.T[ak];lhg=m.mh*(th.att??1)*(ta.def??1);lag=m.ma*(ta.att??1)*(th.def??1);samples=Math.min(th.played||0,ta.played||0);confidence=samples>=18?'Mitjana':samples>=8?'Baixa':'Orientativa';}else if(lh&&la&&lh===la&&C[lh]?.T[hk]&&C[lh]?.T[ak]){
   const m=C[lh],th=m.T[hk],ta=m.T[ak];
   lhg=m.mh*(th.hatt??1)*(ta.adef??1);lag=m.ma*(ta.aatt??1)*(th.hdef??1);
   samples=Math.min(th.samples,ta.samples);confidence=samples>=18?'Alta':samples>=8?'Mitjana':'Baixa';
@@ -121,7 +121,7 @@ function draw(){let comb=1;const txt=[];
   const pred=predict(h,a);if(!pred){out.innerHTML='<div class="pick">Sense dades fiables d’aquesta competició</div>';txt.push((i+1)+': pendent de dades');continue}
   const{p,b}=pred,pk=pick(p);comb*=pk.length;txt.push((i+1)+': '+(i==14?lab(b[0])+'-'+lab(b[1]):pk));
   const norm=s=>(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
-  const abs=(A.absences||[]).filter(x=>norm(x.team)===norm(h)||norm(x.team)===norm(a));
+  const today=new Date().toISOString().slice(0,10);const abs=(A.absences||[]).filter(x=>(!x.date||String(x.date).slice(0,10)>=today)&&(norm(x.team)===norm(h)||norm(x.team)===norm(a)));
   const absText=abs.length?abs.map(x=>x.team+': '+x.player+' ('+x.type+')').join(' · '):'Cap baixa registrada a la font connectada; no equival a confirmar que no n’hi hagi.';
   const hs=pred.teamStats.home,as=pred.teamStats.away;
   const statText=hs&&as?('Atac local '+(hs.hatt||1).toFixed(2)+'× · defensa local '+(hs.hdef||1).toFixed(2)+'× · atac visitant '+(as.aatt||1).toFixed(2)+'× · defensa visitant '+(as.adef||1).toFixed(2)+'×'):'No hi ha mostra estadística completa dels dos equips en la mateixa competició.';
