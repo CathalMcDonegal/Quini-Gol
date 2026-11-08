@@ -27,7 +27,7 @@ jobs:
           selected=None
           for heading in soup.find_all(["h2","h3"]):
               title=heading.get_text(" ",strip=True)
-              jm=re.search(r"JORNADA\\s*(?:N[º°.]?\\s*)?(\\d+)",title,re.I)
+              jm=re.search(r"JORNADA\s*(?:N[º°.]?\s*)?(\d+)",title,re.I)
               if not jm: continue
               table=heading.find_next("table")
               if not table: continue
@@ -35,14 +35,14 @@ jobs:
               for tr in table.find_all("tr"):
                   cells=[x.get_text(" ",strip=True) for x in tr.find_all(["td","th"])]
                   if len(cells)<2: continue
-                  nm=re.search(r"^\\s*(\\d{1,2})\\s*$",cells[0])
+                  nm=re.search(r"^\s*(\d{1,2})\s*$",cells[0])
                   if not nm: continue
                   n=int(nm.group(1))
-                  teams=re.sub(r"\\s+"," ",cells[1]).strip()
+                  teams=re.sub(r"\s+"," ",cells[1]).strip()
                   teams=re.sub(r"^.*?Image","",teams)
-                  pair=re.split(r"\\s+[–—-]\\s+",teams,maxsplit=1)
+                  pair=re.split(r"\s+[–—-]\s+",teams,maxsplit=1)
                   if len(pair)!=2:
-                      pair=re.split(r"\\s*[-–—]\\s*",teams,maxsplit=1)
+                      pair=re.split(r"\s*[-–—]\s*",teams,maxsplit=1)
                   if len(pair)==2 and pair[0].strip() and pair[1].strip():
                       matches[n]={"home":pair[0].strip(),"away":pair[1].strip()}
               if len(matches)==15 and set(matches)==set(range(1,16)):
