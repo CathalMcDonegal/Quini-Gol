@@ -96,6 +96,8 @@ jobs:
                       if not all((team_col,played_col,gf_col,ga_col)): continue
                       for _, row in table.iterrows():
                           team = str(row[team_col]).strip()
+                          team = re.sub(r"\\s+PG\\d+.*$", "", team).strip()
+                          team = {"Barcelona":"FC Barcelona","Real Madrid":"Real Madrid CF","Atlético":"Atlético de Madrid","Espanyol":"RCD Espanyol de Barcelona","Tenerife":"Costa Adeje Tenerife","Eibar":"SD Eibar","Dépor":"Deportivo Abanca","Granada":"Granada CF","Sevilla":"Sevilla FC","Alavés":"Deportivo Alavés","Badalona":"FC Badalona Women","Valencia":"VCF Femenino","Logroño":"Logroño United"}.get(team,team)
                           if not team or team.lower() in ("nan","equipo","team"): continue
                           try:
                               played, gf, ga = int(row[played_col]), int(row[gf_col]), int(row[ga_col])
