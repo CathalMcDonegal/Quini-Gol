@@ -1,0 +1,130 @@
+[
+  {
+    "team": "Barcelona PG8 PE0 PP1 GF36 GC4",
+    "played": 9,
+    "gf": 36,
+    "ga": 4,
+    "source": "FemGol",
+    "points": 24
+  },
+  {
+    "team": "Real Madrid PG7 PE2 PP1 GF23 GC18",
+    "played": 10,
+    "gf": 23,
+    "ga": 18,
+    "source": "FemGol",
+    "points": 23
+  },
+  {
+    "team": "Madrid CFF PG5 PE2 PP2 GF15 GC16",
+    "played": 9,
+    "gf": 15,
+    "ga": 16,
+    "source": "FemGol",
+    "points": 17
+  },
+  {
+    "team": "Atlético PG5 PE1 PP3 GF19 GC12",
+    "played": 9,
+    "gf": 19,
+    "ga": 12,
+    "source": "FemGol",
+    "points": 16
+  },
+  {
+    "team": "Athletic PG4 PE4 PP2 GF13 GC11",
+    "played": 10,
+    "gf": 13,
+    "ga": 11,
+    "source": "FemGol",
+    "points": 16
+  },
+  {
+    "team": "Espanyol PG4 PE3 PP3 GF14 GC11",
+    "played": 10,
+    "gf": 14,
+    "ga": 11,
+    "source": "FemGol",
+    "points": 15
+  },
+  {
+    "team": "Tenerife PG4 PE2 PP3 GF14 GC14",
+    "played": 9,
+    "gf": 14,
+    "ga": 14,
+    "source": "FemGol",
+    "points": 14
+  },
+  {
+    "team": "Real Sociedad PG3 PE4 PP3 GF13 GC15",
+    "played": 10,
+    "gf": 13,
+    "ga": 15,
+    "source": "FemGol",
+    "points": 13
+  },
+  {
+    "team": "Eibar PG3 PE3 PP4 GF10 GC13",
+    "played": 10,
+    "gf": 10,
+    "ga": 13,
+    "source": "FemGol",
+    "points": 12
+  },
+  {
+    "team": "Dépor PG3 PE2 PP4 GF11 GC11",
+    "played": 9,
+    "gf": 11,
+    "ga": 11,
+    "source": "FemGol",
+    "points": 11
+  },
+  {
+    "team": "Granada PG3 PE2 PP5 GF9 GC16",
+    "played": 10,
+    "gf": 9,
+    "ga": 16,
+    "source": "FemGol",
+    "points": 11
+  },
+  {
+    "team": "Logroño PG3 PE1 PP6 GF11 GC14",
+    "played": 10,
+    "gf": 11,
+    "ga": 14,
+    "source": "FemGol",
+    "points": 10
+  },
+  {
+    "team": "Sevilla PG2 PE4 PP4 GF11 GC16",
+    "played": 10,
+    "gf": 11,
+    "ga": 16,
+    "source": "FemGol",
+    "points": 10
+  },
+  {
+    "team": "Alavés PG2 PE2 PP5 GF6 GC13",
+    "played": 9,
+    "gf": 6,
+    "ga": 13,
+    "source": "FemGol",
+    "points": 8
+  },
+  {
+    "team": "Badalona PG2 PE2 PP5 GF9 GC17",
+    "played": 9,
+    "gf": 9,
+    "ga": 17,
+    "source": "FemGol",
+    "points": 8
+  },
+  {
+    "team": "Valencia PG1 PE0 PP8 GF6 GC19",
+    "played": 9,
+    "gf": 6,
+    "ga": 19,
+    "source": "FemGol",
+    "points": 3
+  }
+]

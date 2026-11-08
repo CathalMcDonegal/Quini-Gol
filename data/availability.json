@@ -1,7 +1,38 @@
 {
-  "updated": null,
-  "source": "API-Football",
-  "configured": false,
+  "updated": "2026-11-08T14:22:21.952625+00:00",
+  "source": "Fonts públiques",
+  "configured": true,
   "leagues": [],
-  "absences": []
+  "absences": [],
+  "notes": "Les lesions i sancions només s'incorporen quan una font pública les identifica explícitament. No trobar una notícia no significa absència de baixes.",
+  "sources": [
+    {
+      "name": "RFEF",
+      "url": "https://rfef.es/es"
+    },
+    {
+      "name": "Futbol Total - Liga F",
+      "url": "https://futboltotal.futbol/league/primera-division-femenina/noticias/"
+    },
+    {
+      "name": "Mundo Deportivo - Femení",
+      "url": "https://www.mundodeportivo.com/futbol/femenino"
+    },
+    {
+      "name": "Sancionadas para la jornada 10 de Liga F: seis partidos a Gema Climent",
+      "url": "https://futboltotal.futbol/league/primera-division-femenina/noticias/sancionadas-jornada-10-liga-f-gema-climent"
+    },
+    {
+      "name": "Sancionadas para la jornada 9 de Liga F: Laia Parera y Camila Sáez",
+      "url": "https://futboltotal.futbol/league/primera-division-femenina/noticias/sancionadas-jornada-9-liga-f-parera-saez"
+    },
+    {
+      "name": "Sancionadas para la jornada 8 de Liga F: cinco bajas, con Lola Gallardo entre ellas",
+      "url": "https://futboltotal.futbol/league/primera-division-femenina/noticias/sancionadas-jornada-8-liga-f-lola-gallardo"
+    },
+    {
+      "name": "Liga F: producción récord en el Clásico, baja de Vicky López y el derbi de Hermoso",
+      "url": "https://futboltotal.futbol/league/primera-division-femenina/noticias/resumen-liga-f-15-octubre-clasico-vicky-hermoso"
+    }
+  ]
 }
