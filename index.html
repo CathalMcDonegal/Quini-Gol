@@ -68,9 +68,9 @@ function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])
  if(!n){const m=$('#msg');m.style.display='block';m.textContent='Encara no hi ha dades. Executa l\'acció "Actualitza dades" a GitHub (pestanya Actions) i recarrega.'}
  else{const d=all.map(x=>x[0][0]).sort().pop();$('#sub').textContent=(F.journey?'Jornada '+F.journey+' · ':'')+(F.date||'')+' · Dades fins al '+d.split('-').reverse().join('/')}
  const opt=['<option value="">Equip</option>'];
- const extra=[...new Set((F.matches||[]).flatMap(x=>[x.home,x.away]))].filter(t=>!L[t]);
+ const extra=[...new Set((F.matches||[]).flatMap(x=>[x.home,x.away]))].filter(t=>!L[t]);const intTeams=new Set((F.matches||[]).flatMap(x=>[x.home,x.away]).map(t=>({'Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England'}[t]||t)));
  for(const l of['SP1','SP2','INT']){opt.push(`<optgroup label="${l=='SP1'?'Primera':l=='SP2'?'Segona':'Seleccions'}">`);
-  Object.keys(L).filter(t=>L[t]==l).sort().forEach(t=>opt.push(`<option>${t}</option>`));opt.push('</optgroup>')}
+  Object.keys(L).filter(t=>L[t]==l&&(l!=='INT'||intTeams.has(t))).sort().forEach(t=>opt.push(`<option>${t}</option>`));opt.push('</optgroup>')}
  extra.forEach(t=>opt.push(`<option>${t}</option>`));
  const o=opt.join('');
  $('#rows').innerHTML=Array.from({length:15},(_,i)=>`<div class="row" id="r${i}"><div class="teams"><select data-i="${i}" data-s="0">${o}</select><select data-i="${i}" data-s="1">${o}</select></div><div class="out"></div></div>`).join('');
