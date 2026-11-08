@@ -72,15 +72,22 @@ function grid(lh,la){const f=[1];for(let i=1;i<11;i++)f[i]=f[i-1]*i;const p=(l,k
 function predict(h,a){
  const alias={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England','Alavés (F)':'Deportivo Alavés','Eibar (F)':'SD Eibar','Real Sociedad (F)':'Real Sociedad','Athletic Club (F)':'Athletic Club','Sevilla (F)':'Sevilla FC','At. Madrid (F)':'Atlético de Madrid','Valencia (F)':'VCF Femenino','Granada (F)':'Granada CF'};
  const hk=alias[h]||h,ak=alias[a]||a,lh=L[hk],la=L[ak];
- if(!lh||!la||lh!==la||!C[lh])return null;
- const m=C[lh],th=m.T[hk],ta=m.T[ak];if(!th||!ta)return null;
- const homeFactor=th.hatt??1,homeDef=th.hdef??1,awayFactor=ta.aatt??1,awayDef=ta.adef??1;
- const lhg=m.mh*homeFactor*awayDef,lag=m.ma*awayFactor*homeDef;
- const g=grid(lhg,lag);let p=[0,0,0];const q=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+ let lhg=1.38,lag=1.08,confidence='Orientativa',samples=0;
+ if(lh&&la&&lh===la&&C[lh]?.T[hk]&&C[lh]?.T[ak]){
+  const m=C[lh],th=m.T[hk],ta=m.T[ak];
+  lhg=m.mh*(th.hatt??1)*(ta.adef??1);lag=m.ma*(ta.aatt??1)*(th.hdef??1);
+  samples=Math.min(th.samples,ta.samples);confidence=samples>=18?'Alta':samples>=8?'Mitjana':'Baixa';
+ }else if((lh==='SP1'||lh==='SP2')&&(la==='SP1'||la==='SP2')&&C[lh]?.T[hk]&&C[la]?.T[ak]){
+  const mh=C[lh],ma=C[la],th=mh.T[hk],ta=ma.T[ak];
+  lhg=mh.mh*(th.hatt??1)*(ta.adef??1);lag=ma.ma*(ta.aatt??1)*(th.hdef??1);
+  samples=Math.min(th.samples,ta.samples);confidence='Baixa';
+ }else if(h.includes('(F)')||a.includes('(F)')){lhg=1.35;lag=1.08;}
+ else if(['Belgium','Italy','Spain','England'].includes(hk)||['Belgium','Italy','Spain','England'].includes(ak)){lhg=1.22;lag=1.12;}
+ const g=grid(Math.max(.25,Math.min(3.5,lhg)),Math.max(.25,Math.min(3.5,lag)));
+ let p=[0,0,0];const q=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
  for(let i=0;i<11;i++)for(let j=0;j<11;j++){p[i>j?0:i==j?1:2]+=g[i][j];q[Math.min(i,3)][Math.min(j,3)]+=g[i][j]}
- let b=[0,0,0];for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(q[i][j]>q[b[0]][b[1]])b=[i,j,q[i][j]];
- const confidence=(th.samples>=18&&ta.samples>=18)?'Alta':(th.samples>=8&&ta.samples>=8)?'Mitjana':'Baixa';
- return{p,b:[b[0],b[1],q[b[0]][b[1]]],confidence,samples:Math.min(th.samples,ta.samples)};
+ let best=[0,0,0];for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(q[i][j]>q[best[0]][best[1]])best=[i,j,q[i][j]];
+ return{p,b:[best[0],best[1],q[best[0]][best[1]]],confidence,samples};
 }
 function pick(p){const o=[0,1,2].sort((x,y)=>p[y]-p[x]),mx=p[o[0]];
  const n=mx>=.5?1:mx>=.38?2:3;return o.slice(0,n).sort().map(i=>'1X2'[i]).join('')}
