@@ -33,7 +33,7 @@ button.g{background:none;color:var(--r);border:2px solid var(--r)}
 <div class="bar"><div><strong id="comb">1</strong> combinacions</div><span><button class="g" id="rs">Esborrar</button> <button id="cp">Copiar</button></span></div>
 <script>
 const $=s=>document.querySelector(s),K='quiniela_v1';
-const M={SP1:[],SP2:[]},L={},C={};let sel=JSON.parse(localStorage.getItem(K)||'[]');
+const M={SP1:[],SP2:[]},L={},C={};let F={matches:[],journey:'',date:''};let sel=[];
 const HL=120,PR=4,RHO=-.1;
 function build(l){const rows=M[l],now=Date.now();let sw=0,sh=0,sa=0;const T={};
  for(const[d,h,a,hg,ag]of rows){const w=Math.pow(.5,(now-Date.parse(d))/864e5/HL);sw+=w;sh+=w*hg;sa+=w*ag;
@@ -56,18 +56,22 @@ function pick(p){const o=[0,1,2].sort((x,y)=>p[y]-p[x]),mx=p[o[0]];
  const n=mx>=.5?1:mx>=.38?2:3;return o.slice(0,n).sort().map(i=>'1X2'[i]).join('')}
 const lab=v=>v==3?'M':v;
 function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])];
+ const storageKey=K+'_'+(F.journey||'manual');sel=JSON.parse(localStorage.getItem(storageKey)||'[]');
+ if(!sel.length&&F.matches?.length===15)sel=F.matches.map(x=>[x.home,x.away]);
  for(const[r,l]of all){L[r[1]]=l;L[r[2]]=l}
  for(const l of['SP1','SP2'])build(l);
  const n=Object.keys(L).length;
  if(!n){const m=$('#msg');m.style.display='block';m.textContent='Encara no hi ha dades. Executa l\'acció "Actualitza dades" a GitHub (pestanya Actions) i recarrega.'}
- else{const d=all.map(x=>x[0][0]).sort().pop();$('#sub').textContent='Dades fins al '+d.split('-').reverse().join('/')}
+ else{const d=all.map(x=>x[0][0]).sort().pop();$('#sub').textContent=(F.journey?'Jornada '+F.journey+' · ':'')+(F.date||'')+' · Dades fins al '+d.split('-').reverse().join('/')}
  const opt=['<option value="">Equip</option>'];
+ const extra=[...new Set((F.matches||[]).flatMap(x=>[x.home,x.away]))].filter(t=>!L[t]);
  for(const l of['SP1','SP2']){opt.push(`<optgroup label="${l=='SP1'?'Primera':'Segona'}">`);
   Object.keys(L).filter(t=>L[t]==l).sort().forEach(t=>opt.push(`<option>${t}</option>`));opt.push('</optgroup>')}
+ extra.forEach(t=>opt.push(`<option>${t}</option>`));
  const o=opt.join('');
  $('#rows').innerHTML=Array.from({length:15},(_,i)=>`<div class="row" id="r${i}"><div class="teams"><select data-i="${i}" data-s="0">${o}</select><select data-i="${i}" data-s="1">${o}</select></div><div class="out"></div></div>`).join('');
  document.querySelectorAll('select').forEach(s=>{const v=(sel[s.dataset.i]||[])[s.dataset.s];if(v)s.value=v;
-  s.onchange=()=>{const i=s.dataset.i;sel[i]=sel[i]||['',''];sel[i][s.dataset.s]=s.value;localStorage.setItem(K,JSON.stringify(sel));draw()}});
+  s.onchange=()=>{const i=s.dataset.i;sel[i]=sel[i]||['',''];sel[i][s.dataset.s]=s.value;localStorage.setItem(storageKey,JSON.stringify(sel));draw()}});
  draw()}
 function draw(){let comb=1;const txt=[];
  for(let i=0;i<15;i++){const[h,a]=sel[i]||['',''],out=$('#r'+i+' .out'),sh=$('#r'+i);
@@ -77,8 +81,8 @@ function draw(){let comb=1;const txt=[];
   out.innerHTML=[0,1,2].map(k=>`<div class="bx ${pk.includes('1X2'[k])?'on':''}"><i style="height:${Math.round(p[k]*100)}%"></i><span>${'1X2'[k]}</span><strong>${Math.round(p[k]*100)}%</strong></div>`).join('')+`<div class="pick">${pk}</div>`;
   if(i==14){sh.insertAdjacentHTML('beforeend',`<div class="pl">Pleno al 15: <strong>${lab(b[0])}-${lab(b[1])}</strong> (${Math.round(b[2]*100)}%)</div>`);comb*=1}}
  $('#comb').textContent=comb.toLocaleString('ca');window._t=txt.join('\n')}
-$('#rs').onclick=()=>{if(confirm('Esborrar la jornada?')){sel=[];localStorage.removeItem(K);init()}};
+$('#rs').onclick=()=>{if(confirm('Esborrar els pronòstics de la jornada?')){sel=(F.matches||[]).map(x=>[x.home,x.away]);localStorage.setItem(K+'_'+(F.journey||'manual'),JSON.stringify(sel));init()}};
 $('#cp').onclick=()=>{navigator.clipboard.writeText(window._t||'').then(()=>{$('#cp').textContent='Copiat';setTimeout(()=>$('#cp').textContent='Copiar',1500)})};
-(async()=>{for(const l of['SP1','SP2']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}init()})();
+(async()=>{for(const l of['SP1','SP2']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}try{F=await(await fetch('data/quiniela.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}init()})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
