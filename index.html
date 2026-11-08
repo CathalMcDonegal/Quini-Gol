@@ -26,6 +26,9 @@ select{width:100%;padding:9px 6px;border:1px solid var(--b);border-radius:4px;ba
 .bx.on{background:var(--r);color:var(--ok)}.bx.on span{color:var(--ok)}.bx.on i{display:none}
 .pick{min-width:56px;text-align:center;font-weight:700;font-size:20px;color:var(--r)}
 .pl{margin-top:8px;font-size:14px;color:var(--m)}.pl strong{color:var(--t)}
+.analysis{margin-top:9px;padding:8px;background:var(--bg);border-radius:4px;font-size:12px;color:var(--m)}
+.analysis summary{cursor:pointer;color:var(--r);font-weight:700}
+.analysis p{margin:6px 0 0}.absence{color:#b45b16}.gooddata{color:var(--r)}
 .bar{position:sticky;bottom:0;background:var(--c);border-top:2px solid var(--r);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;justify-content:space-between}
 button{background:var(--r);color:var(--ok);border:0;border-radius:4px;padding:10px 14px;font:inherit;font-weight:700}
 button.g{background:none;color:var(--r);border:2px solid var(--r)}
@@ -38,7 +41,7 @@ button.g{background:none;color:var(--r);border:2px solid var(--r)}
 <div class="bar"><div><strong id="comb">1</strong> combinacions</div><span><button class="g" id="rs">Esborrar</button> <button class="g" id="save">Desa</button> <button id="cp">Copiar</button></span></div>
 <script>
 const $=s=>document.querySelector(s),K='quiniela_v1';
-const M={SP1:[],SP2:[],INT:[]},L={},C={};let F={matches:[],journey:'',date:''},LF=[];let sel=[];
+const M={SP1:[],SP2:[],INT:[]},L={},C={};let F={matches:[],journey:'',date:''},LF=[],A={configured:false,absences:[]};let sel=[];
 const HL=120,PR=4,RHO=-.1;
 function build(l){
  const rows=M[l],now=Date.now(),halfLife=l==='INT'?730:120,prior=l==='INT'?8:4;
@@ -87,7 +90,7 @@ function predict(h,a){
  let p=[0,0,0];const q=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
  for(let i=0;i<11;i++)for(let j=0;j<11;j++){p[i>j?0:i==j?1:2]+=g[i][j];q[Math.min(i,3)][Math.min(j,3)]+=g[i][j]}
  let best=[0,0,0];for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(q[i][j]>q[best[0]][best[1]])best=[i,j,q[i][j]];
- return{p,b:[best[0],best[1],q[best[0]][best[1]]],confidence,samples};
+ return{p,b:[best[0],best[1],q[best[0]][best[1]]],confidence,samples,expected:[lhg,lag],competition:lh||la||'estimació',teamStats:{home:lh&&C[lh]?.T[hk]||null,away:la&&C[la]?.T[ak]||null}};
 }
 function pick(p){const o=[0,1,2].sort((x,y)=>p[y]-p[x]),mx=p[o[0]];
  const n=mx>=.5?1:mx>=.38?2:3;return o.slice(0,n).sort().map(i=>'1X2'[i]).join('')}
@@ -117,7 +120,12 @@ function draw(){let comb=1;const txt=[];
   if(!h||!a||h==a){out.innerHTML='';continue}
   const pred=predict(h,a);if(!pred){out.innerHTML='<div class="pick">Sense dades fiables d’aquesta competició</div>';txt.push((i+1)+': pendent de dades');continue}
   const{p,b}=pred,pk=pick(p);comb*=pk.length;txt.push((i+1)+': '+(i==14?lab(b[0])+'-'+lab(b[1]):pk));
-  out.innerHTML=[0,1,2].map(k=>`<div class="bx ${pk.includes('1X2'[k])?'on':''}"><i style="height:${Math.round(p[k]*100)}%"></i><span>${'1X2'[k]}</span><strong>${Math.round(p[k]*100)}%</strong></div>`).join('')+`<div class="pick">${pk}<small style="display:block;font-size:10px;color:var(--m)">${pred.confidence} · ${pred.samples} partits/equip</small></div>`;
+  const norm=s=>(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const abs=(A.absences||[]).filter(x=>norm(x.team)===norm(h)||norm(x.team)===norm(a));
+  const absText=abs.length?abs.map(x=>x.team+': '+x.player+' ('+x.type+')').join(' · '):'Cap baixa registrada a la font connectada; no equival a confirmar que no n’hi hagi.';
+  const hs=pred.teamStats.home,as=pred.teamStats.away;
+  const statText=hs&&as?('Atac local '+(hs.hatt||1).toFixed(2)+'× · defensa local '+(hs.hdef||1).toFixed(2)+'× · atac visitant '+(as.aatt||1).toFixed(2)+'× · defensa visitant '+(as.adef||1).toFixed(2)+'×'):'No hi ha mostra estadística completa dels dos equips en la mateixa competició.';
+  out.innerHTML=[0,1,2].map(k=>`<div class="bx ${pk.includes('1X2'[k])?'on':''}"><i style="height:${Math.round(p[k]*100)}%"></i><span>${'1X2'[k]}</span><strong>${Math.round(p[k]*100)}%</strong></div>`).join('')+`<div class="pick">${pk}<small style="display:block;font-size:10px;color:var(--m)">${pred.confidence} · ${pred.samples} partits/equip</small></div>`+`<details class="analysis"><summary>Veure anàlisi i baixes</summary><p>${statText}</p><p>Gols esperats del model: ${pred.expected[0].toFixed(2)} – ${pred.expected[1].toFixed(2)}. Base: ${pred.competition}.</p><p class="${abs.length?'absence':'gooddata'}">${absText}</p><p>${A.configured?'Baixes consultades a API-Football · '+(A.updated||''):'Baixes no connectades: cal configurar API_FOOTBALL_KEY a GitHub per consultar lesions i sancions.'}</p></details>`;
   if(i==14){sh.insertAdjacentHTML('beforeend',`<div class="pl">Ple al 15: <strong>${lab(b[0])}-${lab(b[1])}</strong> (${Math.round(b[2]*100)}%)</div>`);comb*=1}}
  $('#comb').textContent=comb.toLocaleString('ca');window._t=txt.join('\n')}
 $('#rs').onclick=()=>{if(confirm('Esborrar els pronòstics de la jornada?')){sel=(F.matches||[]).map(x=>[x.home,x.away]);localStorage.setItem(K+'_'+(F.journey||'manual'),JSON.stringify(sel));init()}};
@@ -132,6 +140,6 @@ $('#save').onclick=()=>{
  localStorage.setItem(key,JSON.stringify(history.slice(-100)));
  $('#save').textContent='Desat ✓';setTimeout(()=>$('#save').textContent='Desa',1800);
 };
-(async()=>{for(const l of['SP1','SP2','INT']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}try{LF=await(await fetch('data/LF.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{F=await(await fetch('data/quiniela.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}init()})();
+(async()=>{for(const l of['SP1','SP2','INT']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}try{LF=await(await fetch('data/LF.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{A=await(await fetch('data/availability.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{F=await(await fetch('data/quiniela.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}init()})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
