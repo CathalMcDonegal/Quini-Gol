@@ -80,7 +80,7 @@ jobs:
           lf_rows = []
           sources = [
               ("LaLiga", "https://www.laliga.com/futbol-femenino/clasificacion"),
-              ("FemGol", "https://femgol.com/liga-f/clasificacion/")
+              ("FemGol", "https://femgol.com/en/liga-f/standings/")
           ]
           for source_name, url in sources:
               try:
