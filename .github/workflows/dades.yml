@@ -164,11 +164,12 @@ jobs:
         run: |
           git config user.name "dades-bot"
           git config user.email "dades-bot@users.noreply.github.com"
-          git pull --rebase origin main
           git add data
           if ! git diff --cached --quiet; then
             git commit -m "Actualitza resultats de les lligues"
+            git pull --rebase origin main
             git push
           else
             echo "Les dades ja estan actualitzades."
+            git pull --rebase origin main
           fi
