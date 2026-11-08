@@ -9,6 +9,9 @@ on:
       - '.github/workflows/dades.yml'
 permissions:
   contents: write
+concurrency:
+  group: quini-gol-data-refresh
+  cancel-in-progress: true
 jobs:
   dades:
     runs-on: ubuntu-latest
@@ -18,7 +21,7 @@ jobs:
         run: |
           set -e
           mkdir -p data
-          python3 -m pip install --quiet beautifulsoup4 pandas lxml
+          python3 -m pip install --quiet beautifulsoup4 pandas lxml html5lib
           python3 - <<'PY'
           import csv, io, json, urllib.request, datetime, os, re
           today = datetime.date.today()
@@ -161,10 +164,10 @@ jobs:
         run: |
           git config user.name "dades-bot"
           git config user.email "dades-bot@users.noreply.github.com"
+          git pull --rebase origin main
           git add data
           if ! git diff --cached --quiet; then
             git commit -m "Actualitza resultats de les lligues"
-            git pull --rebase origin main
             git push
           else
             echo "Les dades ja estan actualitzades."
