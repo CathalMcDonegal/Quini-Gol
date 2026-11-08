@@ -79,6 +79,6 @@ function draw(){let comb=1;const txt=[];
  $('#comb').textContent=comb.toLocaleString('ca');window._t=txt.join('\n')}
 $('#rs').onclick=()=>{if(confirm('Esborrar la jornada?')){sel=[];localStorage.removeItem(K);init()}};
 $('#cp').onclick=()=>{navigator.clipboard.writeText(window._t||'').then(()=>{$('#cp').textContent='Copiat';setTimeout(()=>$('#cp').textContent='Copiar',1500)})};
-(async()=>{for(const l of['SP1','SP2']){try{M[l]=await(await fetch('data/'+l+'.json')).json()}catch(e){}}init()})();
+(async()=>{for(const l of['SP1','SP2']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}init()})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
