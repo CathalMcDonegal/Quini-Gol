@@ -12,6 +12,11 @@ header p{margin:2px 0 0;font-size:13px;opacity:.9}
 main{max-width:640px;margin:0 auto;padding:12px}
 .row{background:var(--c);border:1px solid var(--b);border-radius:6px;padding:10px;margin-bottom:10px}
 .row b.n{display:inline-block;width:22px;color:var(--r)}
+.section-title{margin:18px 2px 9px;font-size:15px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--r);display:flex;align-items:center;gap:8px}
+.section-title small{font-size:11px;font-weight:600;color:var(--m);text-transform:none;letter-spacing:0}
+.row.ple{border:2px solid #d39b25;background:linear-gradient(135deg,var(--c),rgba(211,155,37,.09));padding:13px}
+.row.ple .ple-tag{font-size:11px;font-weight:800;letter-spacing:.08em;color:#b17a10;margin-bottom:8px}
+.row.ple .pl{border-top:1px solid var(--b);padding-top:9px;font-size:15px}
 .teams{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
 select{width:100%;padding:9px 6px;border:1px solid var(--b);border-radius:4px;background:var(--bg);color:var(--t);font:inherit;font-size:14px}
 .out{display:flex;gap:6px;align-items:center}
@@ -73,7 +78,7 @@ function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])
   Object.keys(L).filter(t=>L[t]==l&&(l!=='INT'||intTeams.has(t))).sort().forEach(t=>opt.push(`<option>${t}</option>`));opt.push('</optgroup>')}
  extra.forEach(t=>opt.push(`<option>${t}</option>`));
  const o=opt.join('');
- $('#rows').innerHTML=Array.from({length:15},(_,i)=>`<div class="row" id="r${i}"><div class="teams"><select data-i="${i}" data-s="0">${o}</select><select data-i="${i}" data-s="1">${o}</select></div><div class="out"></div></div>`).join('');
+ $('#rows').innerHTML='<div class="section-title">Els 14 partits <small>Pronòstic 1 · X · 2</small></div>'+Array.from({length:14},(_,i)=>`<div class="row" id="r${i}"><div class="teams"><select data-i="${i}" data-s="0">${o}</select><select data-i="${i}" data-s="1">${o}</select></div><div class="out"></div></div>`).join('')+'<div class="section-title">Ple al 15 <small>Marcador exacte</small></div><div class="row ple" id="r14"><div class="ple-tag">PARTIT 15 · PLE AL 15</div><div class="teams"><select data-i="14" data-s="0">'+o+'</select><select data-i="14" data-s="1">'+o+'</select></div><div class="out"></div></div>';
  document.querySelectorAll('select').forEach(s=>{const v=(sel[s.dataset.i]||[])[s.dataset.s];if(v)s.value=v;
   s.onchange=()=>{const i=s.dataset.i;sel[i]=sel[i]||['',''];sel[i][s.dataset.s]=s.value;localStorage.setItem(storageKey,JSON.stringify(sel));draw()}});
  draw()}
