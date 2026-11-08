@@ -18,6 +18,7 @@ jobs:
         run: |
           set -e
           mkdir -p data
+          python3 -m pip install --quiet beautifulsoup4
           python3 - <<'PY'
           import csv, io, json, urllib.request, datetime, os
           today = datetime.date.today()
@@ -51,6 +52,49 @@ jobs:
               with open(f"data/{league}.json","w",encoding="utf-8") as out:
                   json.dump(rows,out,separators=(",",":"),ensure_ascii=False)
               print(f"{league}: {len(rows)} partits guardats; últim: {rows[-1][0]}")
+          # Seleccions masculines: resultats internacionals històrics (CC0, Mart Jürisoo).
+          req = urllib.request.Request("https://raw.githubusercontent.com/martj42/international_results/master/results.csv", headers={"User-Agent":"QuiniGol-data-updater/1.0"})
+          raw = urllib.request.urlopen(req, timeout=90).read()
+          reader = csv.DictReader(io.StringIO(raw.decode("utf-8-sig", errors="replace")))
+          intl = []
+          for row in reader:
+              date = (row.get("date") or "").strip()
+              try: dt = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+              except ValueError: continue
+              if dt < today - datetime.timedelta(days=365*12): continue
+              try:
+                  hg, ag = int(row["home_score"]), int(row["away_score"])
+              except (ValueError, KeyError, TypeError): continue
+              home, away = (row.get("home_team") or "").strip(), (row.get("away_team") or "").strip()
+              if home and away: intl.append([dt.isoformat(), home, away, hg, ag])
+          if len(intl) < 1000: raise SystemExit("Dades internacionals incompletes; es conserva la versió anterior.")
+          with open("data/INT.json","w",encoding="utf-8") as out: json.dump(intl,out,separators=(",",":"),ensure_ascii=False)
+          print(f"INT: {len(intl)} partits internacionals des de {intl[0][0]}")
+          # Taula oficial de Liga F: gols a favor/en contra i partits jugats.
+          from bs4 import BeautifulSoup
+          url = "https://en.ligaf.es/matches/lav%C3%A9s"
+          req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0 QuiniGol/1.0"})
+          page = urllib.request.urlopen(req, timeout=60).read().decode("utf-8","replace")
+          soup = BeautifulSoup(page,"html.parser")
+          teams = {"FC Barcelona","Real Madrid CF","Madrid CFF","Atlético de Madrid","Athletic Club","Costa Adeje Tenerife","RCD Espanyol","SD Eibar","Deportivo Abanca","Granada CF","Real Sociedad","Logroño United","Sevilla FC","Deportivo Alavés","FC Badalona Women","VCF Femenino"}
+          stats = []
+          for table in soup.find_all("table"):
+              headers = [x.get_text(" ",strip=True).upper() for x in table.find_all("th")]
+              if not any(x == "GP" for x in headers) or not any(x == "GS" for x in headers) or not any(x == "GA" for x in headers): continue
+              ip, igf, iga = headers.index("GP"), headers.index("GS"), headers.index("GA")
+              for tr in table.find_all("tr"):
+                  cells = tr.find_all(["td","th"])
+                  vals = [x.get_text(" ",strip=True) for x in cells]
+                  team = next((v for v in vals if v in teams), None)
+                  if not team: continue
+                  try:
+                      played, gf, ga = int(vals[ip]), int(vals[igf]), int(vals[iga])
+                  except (ValueError, IndexError): continue
+                  if played > 0: stats.append({"team":team,"played":played,"gf":gf,"ga":ga})
+              if len(stats) >= 14: break
+          if len(stats) < 14: raise SystemExit("No s'ha pogut llegir la classificació oficial de Liga F; no es publica una taula parcial.")
+          with open("data/LF.json","w",encoding="utf-8") as out: json.dump(stats,out,ensure_ascii=False,indent=2)
+          print(f"Liga F: {len(stats)} equips llegits de la classificació oficial.")
           PY
       - name: Desa els canvis
         run: |
