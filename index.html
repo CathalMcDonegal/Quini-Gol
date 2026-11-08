@@ -37,7 +37,7 @@ button.g{background:none;color:var(--r);border:2px solid var(--r)}
 </style></head><body>
 <header><img src="mark.svg" alt=""><div><h1>Quini Gol</h1><p id="sub">Pronòstics amb model estadístic</p></div></header>
 <main><div id="msg"></div><div id="rows"></div>
-<p class="note">Signe sol si el favorit passa del 50%, doble entre el 38% i el 50%, triple per sota. El Ple al 15 mostra el marcador més probable, amb M per 3 gols o més. Sota cada pronòstic veuràs la confiança del model i la mostra estadística: quants partits de cada equip s’han utilitzat. No són punts ni una probabilitat addicional.</p></main>
+<p class="note">La quiniela proposa un únic signe (1, X o 2): el de probabilitat més alta segons el model estadístic. També mostra les probabilitats dels tres resultats, la confiança i la mostra utilitzada. Les baixes i sancions només modifiquen el càlcul quan estan verificades i incorporades a les dades.</p></main>
 <div class="bar"><div><strong id="comb">1</strong> combinacions</div><span><button class="g" id="rs">Esborrar</button> <button class="g" id="save">Desa</button> <button id="cp">Copiar</button></span></div>
 <script>
 const $=s=>document.querySelector(s),K='quiniela_v1';
@@ -92,8 +92,7 @@ function predict(h,a){
  let best=[0,0,0];for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(q[i][j]>q[best[0]][best[1]])best=[i,j,q[i][j]];
  return{p,b:[best[0],best[1],q[best[0]][best[1]]],confidence,samples,expected:[lhg,lag],competition:lh||la||'estimació',teamStats:{home:lh&&C[lh]?.T[hk]||null,away:la&&C[la]?.T[ak]||null}};
 }
-function pick(p){const o=[0,1,2].sort((x,y)=>p[y]-p[x]),mx=p[o[0]];
- const n=mx>=.5?1:mx>=.38?2:3;return o.slice(0,n).sort().map(i=>'1X2'[i]).join('')}
+function pick(p){const o=[0,1,2].sort((x,y)=>p[y]-p[x]);return '1X2'[o[0]]}
 const lab=v=>v==3?'M':v;
 function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2']),...M.INT.map(r=>[r,'INT'])];
  const storageKey=K+'_'+(F.journey||'manual');sel=JSON.parse(localStorage.getItem(storageKey)||'[]');
