@@ -18,7 +18,7 @@ jobs:
         run: |
           set -e
           mkdir -p data
-          python3 -m pip install --quiet beautifulsoup4
+          python3 -m pip install --quiet beautifulsoup4 pandas lxml
           python3 - <<'PY'
           import csv, io, json, urllib.request, datetime, os, re
           today = datetime.date.today()
@@ -73,66 +73,88 @@ jobs:
               else: print("INT: dades insuficients; es conserva la versió anterior.")
           except Exception as exc: print(f"INT opcional no disponible: {exc}")
 
-          # Lesions i sancions: API-Football (secret opcional API_FOOTBALL_KEY).
-          availability = {"updated": datetime.datetime.now(datetime.timezone.utc).isoformat(), "source": "API-Football", "configured": bool(os.environ.get("API_FOOTBALL_KEY")), "leagues": [], "absences": []}
-          api_key = os.environ.get("API_FOOTBALL_KEY")
-          if api_key:
-              # Resultats i classificació femenina de Liga F (ID 142).
+          # Liga F: dades públiques, sense claus ni API de pagament.
+          import pandas as pd
+          import warnings
+          warnings.filterwarnings("ignore")
+          lf_rows = []
+          sources = [
+              ("LaLiga", "https://www.laliga.com/futbol-femenino/clasificacion"),
+              ("FemGol", "https://femgol.com/liga-f/clasificacion/")
+          ]
+          for source_name, url in sources:
               try:
-                  table = {}
-                  for page_no in range(1, 11):
-                      url = f"https://v3.football.api-sports.io/fixtures?league=13&season={season_start}&status=FT&page={page_no}"
-                      req = urllib.request.Request(url, headers={"x-apisports-key":api_key, "User-Agent":"QuiniGol/1.0"})
-                      payload = json.loads(urllib.request.urlopen(req, timeout=60).read().decode("utf-8"))
-                      for item in payload.get("response", []):
-                          teams = item.get("teams") or {}; goals = item.get("goals") or {}
-                          home = (teams.get("home") or {}).get("name",""); away = (teams.get("away") or {}).get("name","")
-                          hg, ag = goals.get("home"), goals.get("away")
-                          if not home or not away or not isinstance(hg,int) or not isinstance(ag,int): continue
-                          for name,gf,ga in ((home,hg,ag),(away,ag,hg)):
-                              t = table.setdefault(name,{"team":name,"played":0,"gf":0,"ga":0})
-                              t["played"] += 1; t["gf"] += gf; t["ga"] += ga
-                      if page_no >= int((payload.get("paging") or {}).get("total",1)): break
-                  if len(table) >= 10:
-                      with open("data/LF.json","w",encoding="utf-8") as out: json.dump(list(table.values()),out,ensure_ascii=False,indent=2)
-                      print(f"Liga F: {len(table)} equips i resultats acumulats.")
-                  else: print("Liga F: dades incompletes; es conserva la versió anterior.")
-              except Exception as exc: print(f"Liga F no disponible: {exc}")
-              for league in (140, 141, 13):
-                  try:
-                      url = f"https://v3.football.api-sports.io/injuries?league={league}&season={season_start}"
-                      req = urllib.request.Request(url, headers={"x-apisports-key":api_key, "User-Agent":"QuiniGol/1.0"})
-                      payload = json.loads(urllib.request.urlopen(req, timeout=60).read().decode("utf-8"))
-                      rows = payload.get("response", [])
-                      for item in rows:
-                          team = item.get("team") or {}; player = item.get("player") or {}; fixture = item.get("fixture") or {}
-                          availability["absences"].append({"league":league,"team":team.get("name",""),"player":player.get("name",""),"type":player.get("type") or "baixa","date":fixture.get("date",""),"status":player.get("type") or "no especificat"})
-                      availability["leagues"].append({"id":league,"count":len(rows),"ok":True})
-                      print(f"Baixes lliga {league}: {len(rows)}")
-                  except Exception as exc:
-                      availability["leagues"].append({"id":league,"ok":False,"error":str(exc)[:180]})
-                      print(f"Baixes lliga {league} no disponibles: {exc}")
-              # Seleccions: localitza les seleccions absolutes i consulta les baixes.
-              for country in ("Belgium","Italy","Spain","England"):
-                  try:
-                      url = "https://v3.football.api-sports.io/teams?search=" + country
-                      req = urllib.request.Request(url, headers={"x-apisports-key":api_key, "User-Agent":"QuiniGol/1.0"})
-                      payload = json.loads(urllib.request.urlopen(req, timeout=45).read().decode("utf-8"))
-                      national = next((x.get("team") for x in payload.get("response",[]) if (x.get("team") or {}).get("national")), None)
-                      if not national: continue
-                      url = f"https://v3.football.api-sports.io/injuries?team={national.get('id')}&season={season_start}"
-                      req = urllib.request.Request(url, headers={"x-apisports-key":api_key, "User-Agent":"QuiniGol/1.0"})
-                      payload = json.loads(urllib.request.urlopen(req, timeout=45).read().decode("utf-8"))
-                      for item in payload.get("response",[]):
-                          player = item.get("player") or {}; fixture = item.get("fixture") or {}
-                          availability["absences"].append({"league":"INT","team":country,"player":player.get("name",""),"type":player.get("type") or "baixa","date":fixture.get("date",""),"status":player.get("type") or "no especificat"})
-                      print(f"Baixes selecció {country}: consultades")
-                  except Exception as exc: print(f"Baixes selecció {country} no disponibles: {exc}")
+                  tables = pd.read_html(url)
+                  for table in tables:
+                      cols = {str(col).strip().lower(): col for col in table.columns}
+                      def col(*names):
+                          return next((cols[n] for n in names if n in cols), None)
+                      team_col = col("equipo","team","squad")
+                      played_col = col("pj","p","mp","partidos")
+                      gf_col = col("gf","goals for")
+                      ga_col = col("gc","ga","goals against")
+                      if not all((team_col,played_col,gf_col,ga_col)): continue
+                      for _, row in table.iterrows():
+                          team = str(row[team_col]).strip()
+                          if not team or team.lower() in ("nan","equipo","team"): continue
+                          try:
+                              played, gf, ga = int(row[played_col]), int(row[gf_col]), int(row[ga_col])
+                          except Exception: continue
+                          if played <= 0 or gf < 0 or ga < 0: continue
+                          points_col, pos_col = col("pts","points"), col("pos","rk","rk.")
+                          item = {"team":team,"played":played,"gf":gf,"ga":ga,"source":source_name}
+                          if points_col:
+                              try: item["points"] = int(row[points_col])
+                              except Exception: pass
+                          if pos_col:
+                              try: item["position"] = int(row[pos_col])
+                              except Exception: pass
+                          lf_rows.append(item)
+                      if len(lf_rows) >= 12: break
+                  if len(lf_rows) >= 12:
+                      print(f"Liga F obtinguda de {source_name}: {len(lf_rows)} equips")
+                      break
+              except Exception as exc:
+                  print(f"Font Liga F {source_name} no disponible: {exc}")
+          if len(lf_rows) >= 12:
+              with open("data/LF.json","w",encoding="utf-8") as out:
+                  json.dump(lf_rows,out,ensure_ascii=False,indent=2)
           else:
-              print("API_FOOTBALL_KEY no configurada: baixes no disponibles.")
+              print("No s'han pogut llegir dades obertes suficients de Liga F; es conserva l'últim fitxer.")
+
+          # Registre de fonts públiques i estat de les baixes.
+          availability = {
+              "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "source": "Fonts públiques",
+              "configured": True,
+              "leagues": [],
+              "absences": [],
+              "notes": "Les lesions i sancions només s'incorporen quan una font pública les identifica explícitament. No trobar una notícia no significa absència de baixes.",
+              "sources": [
+                  {"name":"RFEF","url":"https://rfef.es/es"},
+                  {"name":"Futbol Total - Liga F","url":"https://futboltotal.futbol/league/primera-division-femenina/noticias/"},
+                  {"name":"Mundo Deportivo - Femení","url":"https://www.mundodeportivo.com/futbol/femenino"}
+              ]
+          }
+          try:
+              from bs4 import BeautifulSoup
+              url = "https://futboltotal.futbol/league/primera-division-femenina/noticias/"
+              req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0 QuiniGol/1.0"})
+              html = urllib.request.urlopen(req, timeout=45).read()
+              soup = BeautifulSoup(html,"html.parser")
+              for link in soup.select("a[href]"):
+                  title = " ".join(link.get_text(" ",strip=True).split())
+                  href = link.get("href","")
+                  low = title.lower()
+                  if href.startswith("/") : href = "https://futboltotal.futbol"+href
+                  if href.startswith("http") and any(word in low for word in ("sancion","lesion","baja","expulsion")):
+                      availability["sources"].append({"name":title[:140],"url":href})
+              print(f"Fonts públiques de baixes trobades: {len(availability['sources'])}")
+          except Exception as exc:
+              print(f"No s'ha pogut llegir el llistat públic de notícies de baixes: {exc}")
           with open("data/availability.json","w",encoding="utf-8") as out:
               json.dump(availability,out,ensure_ascii=False,indent=2)
-          PYPY
+
       - name: Desa els canvis
         run: |
           git config user.name "dades-bot"
