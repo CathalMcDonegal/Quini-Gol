@@ -1,0 +1,83 @@
+{
+  "journey": "21",
+  "date": "JORNADA Nº 21 Domingo, 15 de noviembre de 2026",
+  "matches": [
+    {
+      "number": 1,
+      "home": "R. Valladolid",
+      "away": "Castellón"
+    },
+    {
+      "number": 2,
+      "home": "Real Sociedad B",
+      "away": "Sporting"
+    },
+    {
+      "number": 3,
+      "home": "Almería",
+      "away": "Andorra"
+    },
+    {
+      "number": 4,
+      "home": "Mallorca",
+      "away": "Córdoba"
+    },
+    {
+      "number": 5,
+      "home": "R. Oviedo",
+      "away": "Girona"
+    },
+    {
+      "number": 6,
+      "home": "Tenerife",
+      "away": "Ceuta"
+    },
+    {
+      "number": 7,
+      "home": "Granada",
+      "away": "Las Palmas"
+    },
+    {
+      "number": 8,
+      "home": "Eibar",
+      "away": "Cádiz"
+    },
+    {
+      "number": 9,
+      "home": "Eldense",
+      "away": "Sabadell"
+    },
+    {
+      "number": 10,
+      "home": "Bélgica",
+      "away": "Italia"
+    },
+    {
+      "number": 11,
+      "home": "Alavés (F)",
+      "away": "Eibar (F)"
+    },
+    {
+      "number": 12,
+      "home": "Real Sociedad (F)",
+      "away": "Athletic Club (F)"
+    },
+    {
+      "number": 13,
+      "home": "Sevilla (F)",
+      "away": "At. Madrid (F)"
+    },
+    {
+      "number": 14,
+      "home": "Valencia (F)",
+      "away": "Granada (F)"
+    },
+    {
+      "number": 15,
+      "home": "España",
+      "away": "Inglaterra"
+    }
+  ],
+  "source": "Calendari de La Quiniela (partits del butlletí publicat)",
+  "updated": "2026-11-08T13:16:06.967185Z"
+}
