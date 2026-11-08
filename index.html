@@ -100,13 +100,13 @@ function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])
  if(!sel.length&&F.matches?.length===15)sel=F.matches.map(x=>[x.home,x.away]);
  for(const[r,l]of all){L[r[1]]=l;L[r[2]]=l}
  for(const l of['SP1','SP2','INT'])build(l);for(const t of Object.keys(C.INT?.T||{}))L[t]='INT';
- if(LF.length){let gp=0,gf=0,ga=0;for(const t of LF){gp+=t.played;gf+=t.gf;ga+=t.ga;L[t.team]='LF'}const avg=gf/Math.max(1,gp);const T={};for(const t of LF){T[t.team]={att:((t.gf/t.played)+.25*avg)/(1.25*avg),def:((t.ga/t.played)+.25*avg)/(1.25*avg)}}C.LF={mh:avg*1.06,ma:avg*.94,avg,T};}
+ if(LF.length){let gp=0,gf=0,ga=0;for(const t of LF){gp+=t.played;gf+=t.gf;ga+=t.ga;L[t.team]='LF'}const avg=gf/Math.max(1,gp);const T={};for(const t of LF){T[t.team]={att:((t.gf/t.played)+.25*avg)/(1.25*avg),def:((t.ga/t.played)+.25*avg)/(1.25*avg),played:t.played,gf:t.gf,ga:t.ga}}C.LF={mh:avg*1.06,ma:avg*.94,avg,T};}
  const n=Object.keys(L).length;
  if(!n){const m=$('#msg');m.style.display='block';m.textContent='Encara no hi ha dades. Executa l\'acció "Actualitza dades" a GitHub (pestanya Actions) i recarrega.'}
  else{const d=all.map(x=>x[0][0]).sort().pop();$('#sub').textContent=(F.journey?'Jornada '+F.journey+' · ':'')+(F.date||'')+' · Dades fins al '+d.split('-').reverse().join('/')}
  const opt=['<option value="">Equip</option>'];
  const extra=[...new Set((F.matches||[]).flatMap(x=>[x.home,x.away]))].filter(t=>!L[t]);const intTeams=new Set((F.matches||[]).flatMap(x=>[x.home,x.away]).map(t=>({'Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England'}[t]||t)));
- for(const l of['SP1','SP2','INT']){opt.push(`<optgroup label="${l=='SP1'?'Primera':l=='SP2'?'Segona':'Seleccions'}">`);
+ for(const l of['SP1','SP2','LF','INT']){opt.push(`<optgroup label="${l=='SP1'?'Primera':l=='SP2'?'Segona':l=='LF'?'Femení':'Seleccions'}">`);
   Object.keys(L).filter(t=>L[t]==l&&(l!=='INT'||intTeams.has(t))).sort().forEach(t=>opt.push(`<option>${t}</option>`));opt.push('</optgroup>')}
  extra.forEach(t=>opt.push(`<option>${t}</option>`));
  const o=opt.join('');
@@ -121,10 +121,11 @@ function draw(){let comb=1;const txt=[];
   const pred=predict(h,a);if(!pred){out.innerHTML='<div class="pick">Sense dades fiables d’aquesta competició</div>';txt.push((i+1)+': pendent de dades');continue}
   const{p,b}=pred,pk=pick(p);comb*=pk.length;txt.push((i+1)+': '+(i==14?lab(b[0])+'-'+lab(b[1]):pk));
   const norm=s=>(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
-  const today=new Date().toISOString().slice(0,10);const abs=(A.absences||[]).filter(x=>(!x.date||String(x.date).slice(0,10)>=today)&&(norm(x.team)===norm(h)||norm(x.team)===norm(a)));
+  const aMap={'Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England','Alavés (F)':'Alaves','Eibar (F)':'Eibar','Real Sociedad (F)':'Real Sociedad','Athletic Club (F)':'Athletic Club','Sevilla (F)':'Sevilla','At. Madrid (F)':'Atletico Madrid','Valencia (F)':'Valencia','Granada (F)':'Granada'};
+  const today=new Date().toISOString().slice(0,10),ah=aMap[h]||h,aa=aMap[a]||a;const abs=(A.absences||[]).filter(x=>(!x.date||String(x.date).slice(0,10)>=today)&&(norm(x.team)===norm(ah)||norm(x.team)===norm(aa)));
   const absText=abs.length?abs.map(x=>x.team+': '+x.player+' ('+x.type+')').join(' · '):'Cap baixa registrada a la font connectada; no equival a confirmar que no n’hi hagi.';
   const hs=pred.teamStats.home,as=pred.teamStats.away;
-  const statText=hs&&as?('Atac local '+(hs.hatt||1).toFixed(2)+'× · defensa local '+(hs.hdef||1).toFixed(2)+'× · atac visitant '+(as.aatt||1).toFixed(2)+'× · defensa visitant '+(as.adef||1).toFixed(2)+'×'):'No hi ha mostra estadística completa dels dos equips en la mateixa competició.';
+  const statText=hs&&as&&hs.att!==undefined?('Rendiment local: '+hs.gf+' gols a favor / '+hs.ga+' en contra en '+hs.played+' partits. Visitant: '+as.gf+' / '+as.ga+' en '+as.played+' partits.'):(hs&&as?('Atac local '+(hs.hatt||1).toFixed(2)+'× · defensa local '+(hs.hdef||1).toFixed(2)+'× · atac visitant '+(as.aatt||1).toFixed(2)+'× · defensa visitant '+(as.adef||1).toFixed(2)+'×'):'No hi ha mostra estadística completa dels dos equips en la mateixa competició.');
   out.innerHTML=[0,1,2].map(k=>`<div class="bx ${pk.includes('1X2'[k])?'on':''}"><i style="height:${Math.round(p[k]*100)}%"></i><span>${'1X2'[k]}</span><strong>${Math.round(p[k]*100)}%</strong></div>`).join('')+`<div class="pick">${pk}<small style="display:block;font-size:10px;color:var(--m)">${pred.confidence} · ${pred.samples} partits/equip</small></div>`+`<details class="analysis"><summary>Veure anàlisi i baixes</summary><p>${statText}</p><p>Gols esperats del model: ${pred.expected[0].toFixed(2)} – ${pred.expected[1].toFixed(2)}. Base: ${pred.competition}.</p><p class="${abs.length?'absence':'gooddata'}">${absText}</p><p>${A.configured?'Baixes consultades a API-Football · '+(A.updated||''):'Baixes no connectades: cal configurar API_FOOTBALL_KEY a GitHub per consultar lesions i sancions.'}</p></details>`;
   if(i==14){sh.insertAdjacentHTML('beforeend',`<div class="pl">Ple al 15: <strong>${lab(b[0])}-${lab(b[1])}</strong> (${Math.round(b[2]*100)}%)</div>`);comb*=1}}
  $('#comb').textContent=comb.toLocaleString('ca');window._t=txt.join('\n')}
