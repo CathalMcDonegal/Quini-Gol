@@ -35,7 +35,7 @@ button.g{background:none;color:var(--r);border:2px solid var(--r)}
 <header><img src="mark.svg" alt=""><div><h1>Quini Gol</h1><p id="sub">Pronòstics amb model estadístic</p></div></header>
 <main><div id="msg"></div><div id="rows"></div>
 <p class="note">Signe sol si el favorit passa del 50%, doble entre el 38% i el 50%, triple per sota. El Pleno al 15 mostra el marcador més probable, amb M per 3 gols o més.</p></main>
-<div class="bar"><div><strong id="comb">1</strong> combinacions</div><span><button class="g" id="rs">Esborrar</button> <button id="cp">Copiar</button></span></div>
+<div class="bar"><div><strong id="comb">1</strong> combinacions</div><span><button class="g" id="rs">Esborrar</button> <button class="g" id="save">Desa</button> <button id="cp">Copiar</button></span></div>
 <script>
 const $=s=>document.querySelector(s),K='quiniela_v1';
 const M={SP1:[],SP2:[],INT:[]},L={},C={};let F={matches:[],journey:'',date:''},LF=[];let sel=[];
@@ -115,6 +115,16 @@ function draw(){let comb=1;const txt=[];
  $('#comb').textContent=comb.toLocaleString('ca');window._t=txt.join('\n')}
 $('#rs').onclick=()=>{if(confirm('Esborrar els pronòstics de la jornada?')){sel=(F.matches||[]).map(x=>[x.home,x.away]);localStorage.setItem(K+'_'+(F.journey||'manual'),JSON.stringify(sel));init()}};
 $('#cp').onclick=()=>{navigator.clipboard.writeText(window._t||'').then(()=>{$('#cp').textContent='Copiat';setTimeout(()=>$('#cp').textContent='Copiar',1500)})};
+$('#save').onclick=()=>{
+ const key='quiniela_snapshots_v1',id=String(F.journey||'manual');
+ const games=(F.matches||[]).length?F.matches:sel.map((x,i)=>({number:i+1,home:x?.[0]||'',away:x?.[1]||''}));
+ const predictions=games.map((m,i)=>{const h=m.home||sel[i]?.[0],a=m.away||sel[i]?.[1],z=h&&a?predict(h,a):null;return{number:i+1,home:h||'',away:a||'',probabilities:z?z.p.map(v=>Number(v.toFixed(4))):null,selection:z?pick(z.p):null,score:z?[z.b[0],z.b[1]]:null,confidence:z?.confidence||'Sense dades'}});
+ if(!predictions.some(x=>x.selection)){alert('Encara no hi ha pronòstics calculats per desar.');return}
+ const history=JSON.parse(localStorage.getItem(key)||'[]');
+ history.push({journey:id,savedAt:new Date().toISOString(),predictions});
+ localStorage.setItem(key,JSON.stringify(history.slice(-100)));
+ $('#save').textContent='Desat ✓';setTimeout(()=>$('#save').textContent='Desa',1800);
+};
 (async()=>{for(const l of['SP1','SP2','INT']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}try{LF=await(await fetch('data/LF.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{F=await(await fetch('data/quiniela.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}init()})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
