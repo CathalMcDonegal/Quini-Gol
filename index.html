@@ -42,7 +42,7 @@ button.g{background:none;color:var(--r);border:2px solid var(--r)}
 <div class="bar"><div><strong id="comb">1</strong> combinacions</div><span><button class="g" id="rs">Esborrar</button> <button class="g" id="save">Desa</button> <button id="cp">Copiar</button></span></div>
 <script>
 const $=s=>document.querySelector(s),K='quiniela_v1';
-const M={SP1:[],SP2:[],INT:[]},L={},C={};let F={matches:[],journey:'',date:''},LF=[],A={configured:false,absences:[]};let sel=[];
+const M={SP1:[],SP2:[],INT:[]},L={},C={};let LFResults=[];let F={matches:[],journey:'',date:''},LF=[],A={configured:false,absences:[]};let sel=[];
 const HL=120,PR=4,RHO=-.1;
 function build(l){
  const rows=M[l],now=Date.now(),halfLife=l==='INT'?730:120,prior=l==='INT'?8:4;
@@ -118,7 +118,7 @@ function findOfficialResult(home,away){
  const aliases={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England'};
  const norm=v=>(aliases[v]||v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const start=String(F.updated||'').slice(0,10);
- const sources=[['SP1',M.SP1],['SP2',M.SP2],['INT',M.INT]];
+ const sources=[['SP1',M.SP1],['SP2',M.SP2],['INT',M.INT],['LF',LFResults]];
  for(const [league,rows] of sources){
   for(const row of rows||[]){
    if(!Array.isArray(row)||row.length<5)continue;
@@ -167,6 +167,6 @@ $('#save').onclick=()=>{
  localStorage.setItem(key,JSON.stringify(history.slice(-100)));
  $('#save').textContent='Desat ✓';setTimeout(()=>$('#save').textContent='Desa',1800);
 };
-(async()=>{for(const l of['SP1','SP2','INT']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}try{LF=await(await fetch('data/LF.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{A=await(await fetch('data/availability.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{F=await(await fetch('data/quiniela.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}init()})();
+(async()=>{for(const l of['SP1','SP2','INT']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}try{LF=await(await fetch('data/LF.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{LFResults=await(await fetch('data/LF_RESULTS.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{A=await(await fetch('data/availability.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{F=await(await fetch('data/quiniela.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}init()})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
