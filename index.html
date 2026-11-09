@@ -29,6 +29,7 @@ select{width:100%;padding:9px 6px;border:1px solid var(--b);border-radius:4px;ba
 .analysis{margin-top:9px;padding:8px;background:var(--bg);border-radius:4px;font-size:12px;color:var(--m)}
 .analysis summary{cursor:pointer;color:var(--r);font-weight:700}
 .analysis p{margin:6px 0 0}.absence{color:#b45b16}.gooddata{color:var(--r)}
+.result-status{margin-top:9px;padding:8px 10px;border-radius:4px;font-size:13px;font-weight:700;border:1px solid var(--b)}.result-status.ok{background:#e7f7eb;color:#12652c;border-color:#7bc68d}.result-status.bad{background:#fdeaea;color:#a21f1f;border-color:#e9a0a0}.result-status.wait{background:var(--bg);color:var(--m)}@media(prefers-color-scheme:dark){.result-status.ok{background:#102c19;color:#7fe39a}.result-status.bad{background:#351719;color:#ffaaaa}}
 .bar{position:sticky;bottom:0;background:var(--c);border-top:2px solid var(--r);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;justify-content:space-between}
 button{background:var(--r);color:var(--ok);border:0;border-radius:4px;padding:10px 14px;font:inherit;font-weight:700}
 button.g{background:none;color:var(--r);border:2px solid var(--r)}
@@ -113,9 +114,34 @@ function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])
  document.querySelectorAll('select').forEach(s=>{const v=(sel[s.dataset.i]||[])[s.dataset.s];if(v)s.value=v;
   s.onchange=()=>{const i=s.dataset.i;sel[i]=sel[i]||['',''];sel[i][s.dataset.s]=s.value;localStorage.setItem(storageKey,JSON.stringify(sel));draw()}});
  draw()}
+function findOfficialResult(home,away){
+ const aliases={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England'};
+ const norm=v=>(aliases[v]||v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const start=String(F.updated||'').slice(0,10);
+ const sources=[['SP1',M.SP1],['SP2',M.SP2],['INT',M.INT]];
+ for(const [league,rows] of sources){
+  for(const row of rows||[]){
+   if(!Array.isArray(row)||row.length<5)continue;
+   const [date,h,a,hg,ag]=row;
+   if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(date))|| (start&&date<start))continue;
+   if(norm(h)===norm(home)&&norm(a)===norm(away)&&Number.isFinite(Number(hg))&&Number.isFinite(Number(ag)))return{date,homeGoals:Number(hg),awayGoals:Number(ag),league};
+  }
+ }
+ return null;
+}
+function resultMarkup(i,home,away,pred){
+ const actual=findOfficialResult(home,away);
+ if(!actual)return '<div class="result-status wait">⏳ Resultat pendent de verificació</div>';
+ const sign=actual.homeGoals>actual.awayGoals?'1':actual.homeGoals===actual.awayGoals?'X':'2';
+ const selected=i===14?null:pick(pred.p);
+ const hit=i===14?false:selected===sign;
+ const score=actual.homeGoals+'–'+actual.awayGoals;
+ if(i===14)return '<div class="result-status wait">🏁 Resultat final: '+score+' · Ple al 15: comprova el marcador exacte</div>';
+ return '<div class="result-status '+(hit?'ok':'bad')+'">'+(hit?'✓ ENCERTAT':'✕ NO ENCERTAT')+' · Resultat '+score+' · Signe '+sign+' · '+actual.date+'</div>';
+}
 function draw(){let comb=1;const txt=[];
  for(let i=0;i<15;i++){const[h,a]=sel[i]||['',''],out=$('#r'+i+' .out'),sh=$('#r'+i);
-  const old=sh.querySelector('.pl');if(old)old.remove();
+  const old=sh.querySelector('.pl');if(old)old.remove();const oldResult=sh.querySelector('.result-status');if(oldResult)oldResult.remove();
   if(!h||!a||h==a){out.innerHTML='';continue}
   const pred=predict(h,a);if(!pred){out.innerHTML='<div class="pick">Sense dades fiables d’aquesta competició</div>';txt.push((i+1)+': pendent de dades');continue}
   const{p,b}=pred,pk=pick(p);comb*=pk.length;txt.push((i+1)+': '+(i==14?lab(b[0])+'-'+lab(b[1]):pk));
@@ -126,6 +152,7 @@ function draw(){let comb=1;const txt=[];
   const hs=pred.teamStats.home,as=pred.teamStats.away;
   const statText=hs&&as&&hs.att!==undefined?('Rendiment local: '+hs.gf+' gols a favor / '+hs.ga+' en contra en '+hs.played+' partits. Visitant: '+as.gf+' / '+as.ga+' en '+as.played+' partits.'):(hs&&as?('Atac local '+(hs.hatt||1).toFixed(2)+'× · defensa local '+(hs.hdef||1).toFixed(2)+'× · atac visitant '+(as.aatt||1).toFixed(2)+'× · defensa visitant '+(as.adef||1).toFixed(2)+'×'):'No hi ha mostra estadística completa dels dos equips en la mateixa competició.');
   out.innerHTML=[0,1,2].map(k=>`<div class="bx ${pk.includes('1X2'[k])?'on':''}"><i style="height:${Math.round(p[k]*100)}%"></i><span>${'1X2'[k]}</span><strong>${Math.round(p[k]*100)}%</strong></div>`).join('')+`<div class="pick">${pk}<small style="display:block;font-size:10px;color:var(--m)">Confiança ${pred.confidence} · mostra: ${pred.samples} partits per equip</small></div>`+`<details class="analysis"><summary>Veure anàlisi i baixes</summary><p>${statText}</p><p>Gols esperats del model: ${pred.expected[0].toFixed(2)} – ${pred.expected[1].toFixed(2)}. Base: ${pred.competition}.</p><p class="${abs.length?'absence':'gooddata'}">${absText}</p><p>${'Dades obertes de Liga F · '+(A.updated||'')+'. Les baixes només es donen per confirmades si una font identifica explícitament la jugadora i el club.'}</p><p>Fonts: <a href="https://www.laliga.com/futbol-femenino/clasificacion" target="_blank" rel="noopener">LaLiga · classificació</a> · <a href="https://femgol.com/en/liga-f/standings/" target="_blank" rel="noopener">FemGol · estadístiques</a> · <a href="https://fbref.com/en/comps/230/Liga-F-Stats" target="_blank" rel="noopener">FBref · estadístiques avançades</a> · <a href="https://rfef.es/es" target="_blank" rel="noopener">RFEF · disciplina</a></p></details>`;
+  sh.insertAdjacentHTML('beforeend',resultMarkup(i,h,a,pred));
   if(i==14){sh.insertAdjacentHTML('beforeend',`<div class="pl">Ple al 15: <strong>${lab(b[0])}-${lab(b[1])}</strong> (${Math.round(b[2]*100)}%)</div>`);comb*=1}}
  $('#comb').textContent=comb.toLocaleString('ca');window._t=txt.join('\n')}
 $('#rs').onclick=()=>{if(confirm('Esborrar els pronòstics de la jornada?')){sel=(F.matches||[]).map(x=>[x.home,x.away]);localStorage.setItem(K+'_'+(F.journey||'manual'),JSON.stringify(sel));init()}};
