@@ -29,7 +29,7 @@ select{width:100%;padding:9px 6px;border:1px solid var(--b);border-radius:4px;ba
 .analysis{margin-top:9px;padding:8px;background:var(--bg);border-radius:4px;font-size:12px;color:var(--m)}
 .analysis summary{cursor:pointer;color:var(--r);font-weight:700}
 .analysis p{margin:6px 0 0}.absence{color:#b45b16}.gooddata{color:var(--r)}
-.result-status{margin-top:9px;padding:8px 10px;border-radius:4px;font-size:13px;font-weight:700;border:1px solid var(--b)}.result-status.ok{background:#e7f7eb;color:#12652c;border-color:#7bc68d}.result-status.bad{background:#fdeaea;color:#a21f1f;border-color:#e9a0a0}.result-status.wait{background:var(--bg);color:var(--m)}@media(prefers-color-scheme:dark){.result-status.ok{background:#102c19;color:#7fe39a}.result-status.bad{background:#351719;color:#ffaaaa}}
+.result-status{margin-top:9px;padding:8px 10px;border-radius:4px;font-size:13px;font-weight:700;border:1px solid var(--b)}.result-status.ok{background:#e7f7eb;color:#12652c;border-color:#7bc68d}.history-card{background:var(--c);border:1px solid var(--b);border-radius:6px;padding:10px;margin-bottom:10px}.history-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px;font-size:13px}.history-head span{color:var(--m);font-size:11px}.history-match{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--b);font-size:12px}.history-match small{display:block;color:var(--m)}.history-match b{white-space:nowrap}.ok-text{color:#14873a}.bad-text{color:#bd3434}.wait-text{color:var(--m)}.result-status.bad{background:#fdeaea;color:#a21f1f;border-color:#e9a0a0}.result-status.wait{background:var(--bg);color:var(--m)}@media(prefers-color-scheme:dark){.result-status.ok{background:#102c19;color:#7fe39a}.result-status.bad{background:#351719;color:#ffaaaa}}
 .bar{position:sticky;bottom:0;background:var(--c);border-top:2px solid var(--r);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;justify-content:space-between}
 button{background:var(--r);color:var(--ok);border:0;border-radius:4px;padding:10px 14px;font:inherit;font-weight:700}
 button.g{background:none;color:var(--r);border:2px solid var(--r)}
@@ -37,7 +37,7 @@ button.g{background:none;color:var(--r);border:2px solid var(--r)}
 #msg{background:var(--c);border:1px solid var(--r);border-radius:6px;padding:10px;font-size:14px;margin-bottom:10px;display:none}
 </style></head><body>
 <header><img src="mark.svg" alt=""><div><h1>Quini Gol</h1><p id="sub">Pronòstics amb model estadístic</p></div></header>
-<main><div id="msg"></div><div id="rows"></div>
+<main><div id="msg"></div><div id="rows"></div><div id="history"></div>
 <p class="note">La quiniela proposa un únic signe (1, X o 2): el de probabilitat més alta segons el model estadístic. També mostra les probabilitats dels tres resultats, la confiança i la mostra utilitzada. Les baixes i sancions només modifiquen el càlcul quan estan verificades i incorporades a les dades.</p></main>
 <div class="bar"><div><strong id="comb">1</strong> combinacions</div><span><button class="g" id="rs">Esborrar</button> <button class="g" id="save">Desa</button> <button id="cp">Copiar</button></span></div>
 <script>
@@ -113,11 +113,11 @@ function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])
  $('#rows').innerHTML='<div class="section-title">Els 14 partits <small>Pronòstic 1 · X · 2</small></div>'+Array.from({length:14},(_,i)=>`<div class="row" id="r${i}"><div class="teams"><select data-i="${i}" data-s="0">${o}</select><select data-i="${i}" data-s="1">${o}</select></div><div class="out"></div></div>`).join('')+'<div class="section-title">Ple al 15 <small>Marcador exacte</small></div><div class="row ple" id="r14"><div class="ple-tag">PARTIT 15 · PLE AL 15</div><div class="teams"><select data-i="14" data-s="0">'+o+'</select><select data-i="14" data-s="1">'+o+'</select></div><div class="out"></div></div>';
  document.querySelectorAll('select').forEach(s=>{const v=(sel[s.dataset.i]||[])[s.dataset.s];if(v)s.value=v;
   s.onchange=()=>{const i=s.dataset.i;sel[i]=sel[i]||['',''];sel[i][s.dataset.s]=s.value;localStorage.setItem(storageKey,JSON.stringify(sel));draw()}});
- draw()}
-function findOfficialResult(home,away){
+ draw();saveSnapshot(true);renderHistory()}
+function findOfficialResult(home,away,referenceDate){
  const aliases={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England'};
  const norm=v=>(aliases[v]||v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
- const start=String(F.updated||'').slice(0,10);
+ const start=String(referenceDate||F.updated||'').slice(0,10);
  const sources=[['SP1',M.SP1],['SP2',M.SP2],['INT',M.INT],['LF',LFResults]];
  for(const [league,rows] of sources){
   for(const row of rows||[]){
@@ -128,6 +128,42 @@ function findOfficialResult(home,away){
   }
  }
  return null;
+}
+function makeSnapshot(){
+ const games=(F.matches||[]).length?F.matches:sel.map((x,i)=>({number:i+1,home:x?.[0]||'',away:x?.[1]||''}));
+ const predictions=games.map((m,i)=>{const h=m.home||sel[i]?.[0],a=m.away||sel[i]?.[1],z=h&&a?predict(h,a):null;return{number:i+1,home:h||'',away:a||'',probabilities:z?z.p.map(v=>Number(v.toFixed(4))):null,selection:z?pick(z.p):null,score:z?[z.b[0],z.b[1]]:null,confidence:z?.confidence||'Sense dades'}});
+ return predictions.some(x=>x.home&&x.away)?predictions:[];
+}
+function saveSnapshot(silent=false){
+ const key='quiniela_snapshots_v1',id=String(F.journey||'manual'),predictions=makeSnapshot();
+ if(!predictions.some(x=>x.selection)){if(!silent)alert('Encara no hi ha pronòstics calculats per desar.');return}
+ const history=JSON.parse(localStorage.getItem(key)||'[]');
+ const index=history.findIndex(x=>String(x.journey)===id);
+ if(index>=0){
+  const old=history[index],hasResults=old.predictions?.some(p=>p.home&&findOfficialResult(p.home,p.away,old.savedAt));
+  if(!hasResults)history[index]={journey:id,savedAt:old.savedAt||new Date().toISOString(),predictions};
+ }else history.push({journey:id,savedAt:new Date().toISOString(),predictions});
+ localStorage.setItem(key,JSON.stringify(history.slice(-100)));
+ renderHistory();
+ if(!silent){$('#save').textContent='Desat ✓';setTimeout(()=>$('#save').textContent='Desa',1800)}
+}
+function renderHistory(){
+ const host=$('#history');if(!host)return;
+ const history=JSON.parse(localStorage.getItem('quiniela_snapshots_v1')||'[]').slice().reverse();
+ if(!history.length){host.innerHTML='';return}
+ host.innerHTML='<div class="section-title">Historial i encerts <small>Seguiment automàtic de les jornades desades</small></div>'+history.map(item=>{
+  let ok=0,bad=0,pending=0;
+  const rows=(item.predictions||[]).map((p,i)=>{
+   const actual=p.home&&p.away?findOfficialResult(p.home,p.away,item.savedAt):null;
+   if(!actual){pending++;return '<div class="history-match"><span>'+(p.number||i+1)+'. '+p.home+' – '+p.away+'</span><b class="wait-text">Pendent</b></div>'}
+   const sign=actual.homeGoals>actual.awayGoals?'1':actual.homeGoals===actual.awayGoals?'X':'2';
+   const hit=i===14?(p.score&&p.score[0]===actual.homeGoals&&p.score[1]===actual.awayGoals):p.selection===sign;
+   if(hit)ok++;else bad++;
+   const detail=i===14?'Marcador '+actual.homeGoals+'–'+actual.awayGoals:(actual.homeGoals+'–'+actual.awayGoals+' · '+sign);
+   return '<div class="history-match"><span>'+(p.number||i+1)+'. '+p.home+' – '+p.away+' <small>'+detail+'</small></span><b class="'+(hit?'ok-text':'bad-text')+'">'+(hit?'✓ Encertat':'✕ Fallat')+'</b></div>';
+  }).join('');
+  return '<div class="history-card"><div class="history-head"><strong>Jornada '+item.journey+'</strong><span>'+ok+' encerts · '+bad+' errors · '+pending+' pendents</span></div>'+rows+'</div>';
+ }).join('');
 }
 function resultMarkup(i,home,away,pred){
  const actual=findOfficialResult(home,away);
@@ -157,16 +193,7 @@ function draw(){let comb=1;const txt=[];
  $('#comb').textContent=comb.toLocaleString('ca');window._t=txt.join('\n')}
 $('#rs').onclick=()=>{if(confirm('Esborrar els pronòstics de la jornada?')){sel=(F.matches||[]).map(x=>[x.home,x.away]);localStorage.setItem(K+'_'+(F.journey||'manual'),JSON.stringify(sel));init()}};
 $('#cp').onclick=()=>{navigator.clipboard.writeText(window._t||'').then(()=>{$('#cp').textContent='Copiat';setTimeout(()=>$('#cp').textContent='Copiar',1500)})};
-$('#save').onclick=()=>{
- const key='quiniela_snapshots_v1',id=String(F.journey||'manual');
- const games=(F.matches||[]).length?F.matches:sel.map((x,i)=>({number:i+1,home:x?.[0]||'',away:x?.[1]||''}));
- const predictions=games.map((m,i)=>{const h=m.home||sel[i]?.[0],a=m.away||sel[i]?.[1],z=h&&a?predict(h,a):null;return{number:i+1,home:h||'',away:a||'',probabilities:z?z.p.map(v=>Number(v.toFixed(4))):null,selection:z?pick(z.p):null,score:z?[z.b[0],z.b[1]]:null,confidence:z?.confidence||'Sense dades'}});
- if(!predictions.some(x=>x.selection)){alert('Encara no hi ha pronòstics calculats per desar.');return}
- const history=JSON.parse(localStorage.getItem(key)||'[]');
- history.push({journey:id,savedAt:new Date().toISOString(),predictions});
- localStorage.setItem(key,JSON.stringify(history.slice(-100)));
- $('#save').textContent='Desat ✓';setTimeout(()=>$('#save').textContent='Desa',1800);
-};
+$('#save').onclick=()=>saveSnapshot(false);
 (async()=>{for(const l of['SP1','SP2','INT']){try{M[l]=await(await fetch('data/'+l+'.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}}try{LF=await(await fetch('data/LF.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{LFResults=await(await fetch('data/LF_RESULTS.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{A=await(await fetch('data/availability.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}try{F=await(await fetch('data/quiniela.json?v='+Date.now(),{cache:'no-store'})).json()}catch(e){}init()})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
