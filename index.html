@@ -116,14 +116,14 @@ function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])
  draw()}
 function findOfficialResult(home,away){
  const aliases={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England'};
- const norm=v=>(aliases[v]||v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const norm=v=>(aliases[v]||v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const start=String(F.updated||'').slice(0,10);
  const sources=[['SP1',M.SP1],['SP2',M.SP2],['INT',M.INT]];
  for(const [league,rows] of sources){
   for(const row of rows||[]){
    if(!Array.isArray(row)||row.length<5)continue;
    const [date,h,a,hg,ag]=row;
-   if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(date))|| (start&&date<start))continue;
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))|| (start&&date<start))continue;
    if(norm(h)===norm(home)&&norm(a)===norm(away)&&Number.isFinite(Number(hg))&&Number.isFinite(Number(ag)))return{date,homeGoals:Number(hg),awayGoals:Number(ag),league};
   }
  }
@@ -134,9 +134,9 @@ function resultMarkup(i,home,away,pred){
  if(!actual)return '<div class="result-status wait">⏳ Resultat pendent de verificació</div>';
  const sign=actual.homeGoals>actual.awayGoals?'1':actual.homeGoals===actual.awayGoals?'X':'2';
  const selected=i===14?null:pick(pred.p);
- const hit=i===14?false:selected===sign;
+ const hit=i===14?(pred.b[0]===actual.homeGoals&&pred.b[1]===actual.awayGoals):selected===sign;
  const score=actual.homeGoals+'–'+actual.awayGoals;
- if(i===14)return '<div class="result-status wait">🏁 Resultat final: '+score+' · Ple al 15: comprova el marcador exacte</div>';
+ if(i===14)return '<div class="result-status '+(hit?'ok':'bad')+'">'+(hit?'✓ PLE AL 15 ENCERTAT':'✕ PLE AL 15 NO ENCERTAT')+' · Resultat '+score+' · '+actual.date+'</div>';
  return '<div class="result-status '+(hit?'ok':'bad')+'">'+(hit?'✓ ENCERTAT':'✕ NO ENCERTAT')+' · Resultat '+score+' · Signe '+sign+' · '+actual.date+'</div>';
 }
 function draw(){let comb=1;const txt=[];
@@ -145,7 +145,7 @@ function draw(){let comb=1;const txt=[];
   if(!h||!a||h==a){out.innerHTML='';continue}
   const pred=predict(h,a);if(!pred){out.innerHTML='<div class="pick">Sense dades fiables d’aquesta competició</div>';txt.push((i+1)+': pendent de dades');continue}
   const{p,b}=pred,pk=pick(p);comb*=pk.length;txt.push((i+1)+': '+(i==14?lab(b[0])+'-'+lab(b[1]):pk));
-  const norm=s=>(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
   const aMap={'Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England','Alavés (F)':'Deportivo Alavés','Eibar (F)':'SD Eibar','Real Sociedad (F)':'Real Sociedad','Athletic Club (F)':'Athletic Club','Sevilla (F)':'Sevilla FC','At. Madrid (F)':'Atlético de Madrid','Valencia (F)':'VCF Femenino','Granada (F)':'Granada CF'};
   const today=new Date().toISOString().slice(0,10),ah=aMap[h]||h,aa=aMap[a]||a;const abs=(A.absences||[]).filter(x=>(!x.date||String(x.date).slice(0,10)>=today)&&(norm(x.team)===norm(ah)||norm(x.team)===norm(aa)));
   const absText=abs.length?abs.map(x=>x.team+': '+x.player+' ('+x.type+')').join(' · '):'Cap baixa registrada a la font connectada; no equival a confirmar que no n’hi hagi.';
