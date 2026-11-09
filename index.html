@@ -115,7 +115,7 @@ function init(){const all=[...M.SP1.map(r=>[r,'SP1']),...M.SP2.map(r=>[r,'SP2'])
   s.onchange=()=>{const i=s.dataset.i;sel[i]=sel[i]||['',''];sel[i][s.dataset.s]=s.value;localStorage.setItem(storageKey,JSON.stringify(sel));draw()}});
  draw();saveSnapshot(true);renderHistory()}
 function findOfficialResult(home,away,referenceDate){
- const aliases={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England'};
+ const aliases={'R. Valladolid':'Valladolid','Castellón':'Castellon','Real Sociedad B':'Sociedad B','Sporting':'Sp Gijon','Almería':'Almeria','Córdoba':'Cordoba','R. Oviedo':'Oviedo','Cádiz':'Cadiz','Bélgica':'Belgium','Italia':'Italy','España':'Spain','Inglaterra':'England','Alavés (F)':'Alavés','Eibar (F)':'Eibar','Real Sociedad (F)':'Real Sociedad','Athletic Club (F)':'Athletic Club','Sevilla (F)':'Sevilla','At. Madrid (F)':'Atlético Madrid','Valencia (F)':'Valencia','Granada (F)':'Granada'};
  const norm=v=>(aliases[v]||v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const start=String(referenceDate||F.updated||'').slice(0,10);
  const sources=[['SP1',M.SP1],['SP2',M.SP2],['INT',M.INT],['LF',LFResults]];
