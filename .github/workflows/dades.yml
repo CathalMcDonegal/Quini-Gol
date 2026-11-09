@@ -89,7 +89,7 @@ jobs:
               try:
                   tables = pd.read_html(url)
                   for table in tables:
-                      cols = {str(col).strip().lower(): col for col in table.columns}
+                      cols = {str(col[-1] if isinstance(col, tuple) else col).strip().lower(): col for col in table.columns}
                       def col(*names):
                           return next((cols[n] for n in names if n in cols), None)
                       team_col = col("equipo","team","squad")
