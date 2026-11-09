@@ -127,6 +127,35 @@ jobs:
           else:
               print("No s'han pogut llegir dades obertes suficients de Liga F; es conserva l'últim fitxer.")
 
+          # Resultats de Liga F per marcar automàticament els encerts de futbol femení.
+          try:
+              url = "https://fbref.com/en/comps/230/schedule/Liga-F-Scores-and-Fixtures"
+              tables = pd.read_html(url)
+              lf_results = []
+              for table in tables:
+                  cols = {str(col).strip().lower(): col for col in table.columns}
+                  date_col = next((cols[k] for k in ("date",) if k in cols), None)
+                  home_col = next((cols[k] for k in ("home",) if k in cols), None)
+                  away_col = next((cols[k] for k in ("away",) if k in cols), None)
+                  score_col = next((cols[k] for k in ("score",) if k in cols), None)
+                  if not all((date_col, home_col, away_col, score_col)): continue
+                  for _, row in table.iterrows():
+                      date_value = str(row[date_col]).strip()
+                      try: match_date = datetime.datetime.strptime(date_value[:10], "%Y-%m-%d").date()
+                      except ValueError: continue
+                      score = str(row[score_col]).strip()
+                      match = re.match(r"^(\\d+)\\s*[–-]\\s*(\\d+)$", score)
+                      home, away = str(row[home_col]).strip(), str(row[away_col]).strip()
+                      if match and home and away:
+                          lf_results.append([match_date.isoformat(), home, away, int(match.group(1)), int(match.group(2))])
+              if lf_results:
+                  with open("data/LF_RESULTS.json","w",encoding="utf-8") as out:
+                      json.dump(lf_results,out,separators=(",",":"),ensure_ascii=False)
+                  print(f"Liga F: {len(lf_results)} resultats i partits guardats")
+              else: print("FBref Liga F sense resultats llegibles; es conserva el fitxer anterior.")
+          except Exception as exc:
+              print(f"Resultats Liga F no disponibles: {exc}")
+
           # Registre de fonts públiques i estat de les baixes.
           availability = {
               "updated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
