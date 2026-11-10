@@ -73,9 +73,9 @@
   },
   {
     "team": "Deportivo Abanca",
-    "played": 9,
+    "played": 10,
     "gf": 11,
-    "ga": 11,
+    "ga": 13,
     "source": "FemGol",
     "points": 11
   },
@@ -121,10 +121,10 @@
   },
   {
     "team": "VCF Femenino",
-    "played": 9,
-    "gf": 6,
+    "played": 10,
+    "gf": 8,
     "ga": 19,
     "source": "FemGol",
-    "points": 3
+    "points": 6
   }
 ]
