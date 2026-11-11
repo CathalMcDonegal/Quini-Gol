@@ -16,20 +16,20 @@
     "points": 23
   },
   {
+    "team": "Atlético de Madrid",
+    "played": 10,
+    "gf": 22,
+    "ga": 12,
+    "source": "FemGol",
+    "points": 19
+  },
+  {
     "team": "Madrid CFF",
     "played": 10,
     "gf": 16,
     "ga": 21,
     "source": "FemGol",
     "points": 17
-  },
-  {
-    "team": "Atlético de Madrid",
-    "played": 9,
-    "gf": 19,
-    "ga": 12,
-    "source": "FemGol",
-    "points": 16
   },
   {
     "team": "Athletic Club",
@@ -113,9 +113,9 @@
   },
   {
     "team": "FC Badalona Women",
-    "played": 9,
+    "played": 10,
     "gf": 9,
-    "ga": 17,
+    "ga": 20,
     "source": "FemGol",
     "points": 8
   },
