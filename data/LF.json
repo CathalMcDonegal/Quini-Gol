@@ -24,6 +24,14 @@
     "points": 19
   },
   {
+    "team": "Costa Adeje Tenerife",
+    "played": 10,
+    "gf": 17,
+    "ga": 15,
+    "source": "FemGol",
+    "points": 17
+  },
+  {
     "team": "Madrid CFF",
     "played": 10,
     "gf": 16,
@@ -41,19 +49,11 @@
   },
   {
     "team": "RCD Espanyol de Barcelona",
-    "played": 10,
-    "gf": 14,
-    "ga": 11,
-    "source": "FemGol",
-    "points": 15
-  },
-  {
-    "team": "Costa Adeje Tenerife",
-    "played": 9,
-    "gf": 14,
+    "played": 11,
+    "gf": 15,
     "ga": 14,
     "source": "FemGol",
-    "points": 14
+    "points": 15
   },
   {
     "team": "Real Sociedad",
