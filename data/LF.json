@@ -9,16 +9,24 @@
   },
   {
     "team": "Real Madrid CF",
-    "played": 10,
-    "gf": 23,
-    "ga": 18,
+    "played": 11,
+    "gf": 26,
+    "ga": 21,
     "source": "FemGol",
-    "points": 23
+    "points": 24
   },
   {
     "team": "Atlético de Madrid",
     "played": 10,
     "gf": 22,
+    "ga": 12,
+    "source": "FemGol",
+    "points": 19
+  },
+  {
+    "team": "Athletic Club",
+    "played": 11,
+    "gf": 17,
     "ga": 12,
     "source": "FemGol",
     "points": 19
@@ -33,19 +41,11 @@
   },
   {
     "team": "Madrid CFF",
-    "played": 10,
-    "gf": 16,
-    "ga": 21,
+    "played": 11,
+    "gf": 18,
+    "ga": 24,
     "source": "FemGol",
     "points": 17
-  },
-  {
-    "team": "Athletic Club",
-    "played": 10,
-    "gf": 13,
-    "ga": 11,
-    "source": "FemGol",
-    "points": 16
   },
   {
     "team": "RCD Espanyol de Barcelona",
@@ -56,18 +56,26 @@
     "points": 15
   },
   {
+    "team": "Logroño United",
+    "played": 11,
+    "gf": 14,
+    "ga": 16,
+    "source": "FemGol",
+    "points": 13
+  },
+  {
     "team": "Real Sociedad",
-    "played": 10,
-    "gf": 13,
-    "ga": 15,
+    "played": 11,
+    "gf": 14,
+    "ga": 19,
     "source": "FemGol",
     "points": 13
   },
   {
     "team": "SD Eibar",
-    "played": 10,
-    "gf": 10,
-    "ga": 13,
+    "played": 11,
+    "gf": 11,
+    "ga": 15,
     "source": "FemGol",
     "points": 12
   },
@@ -80,20 +88,20 @@
     "points": 11
   },
   {
+    "team": "Deportivo Alavés",
+    "played": 10,
+    "gf": 8,
+    "ga": 14,
+    "source": "FemGol",
+    "points": 11
+  },
+  {
     "team": "Granada CF",
     "played": 10,
     "gf": 9,
     "ga": 16,
     "source": "FemGol",
     "points": 11
-  },
-  {
-    "team": "Logroño United",
-    "played": 10,
-    "gf": 11,
-    "ga": 14,
-    "source": "FemGol",
-    "points": 10
   },
   {
     "team": "Sevilla FC",
@@ -104,20 +112,12 @@
     "points": 10
   },
   {
-    "team": "Deportivo Alavés",
-    "played": 9,
-    "gf": 6,
-    "ga": 13,
-    "source": "FemGol",
-    "points": 8
-  },
-  {
     "team": "FC Badalona Women",
-    "played": 10,
-    "gf": 9,
-    "ga": 20,
+    "played": 11,
+    "gf": 12,
+    "ga": 23,
     "source": "FemGol",
-    "points": 8
+    "points": 9
   },
   {
     "team": "VCF Femenino",
