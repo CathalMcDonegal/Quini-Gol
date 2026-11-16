@@ -1,11 +1,11 @@
 [
   {
     "team": "FC Barcelona",
-    "played": 10,
-    "gf": 41,
-    "ga": 5,
+    "played": 11,
+    "gf": 42,
+    "ga": 6,
     "source": "FemGol",
-    "points": 27
+    "points": 28
   },
   {
     "team": "Real Madrid CF",
@@ -17,11 +17,11 @@
   },
   {
     "team": "Atlético de Madrid",
-    "played": 10,
-    "gf": 22,
-    "ga": 12,
+    "played": 11,
+    "gf": 24,
+    "ga": 13,
     "source": "FemGol",
-    "points": 19
+    "points": 22
   },
   {
     "team": "Athletic Club",
@@ -72,20 +72,20 @@
     "points": 13
   },
   {
+    "team": "Deportivo Abanca",
+    "played": 11,
+    "gf": 12,
+    "ga": 14,
+    "source": "FemGol",
+    "points": 12
+  },
+  {
     "team": "SD Eibar",
     "played": 11,
     "gf": 11,
     "ga": 15,
     "source": "FemGol",
     "points": 12
-  },
-  {
-    "team": "Deportivo Abanca",
-    "played": 10,
-    "gf": 11,
-    "ga": 13,
-    "source": "FemGol",
-    "points": 11
   },
   {
     "team": "Deportivo Alavés",
@@ -105,9 +105,9 @@
   },
   {
     "team": "Sevilla FC",
-    "played": 10,
-    "gf": 11,
-    "ga": 16,
+    "played": 11,
+    "gf": 12,
+    "ga": 18,
     "source": "FemGol",
     "points": 10
   },
