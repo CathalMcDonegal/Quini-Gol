@@ -88,18 +88,18 @@
     "points": 12
   },
   {
+    "team": "Granada CF",
+    "played": 11,
+    "gf": 9,
+    "ga": 16,
+    "source": "FemGol",
+    "points": 12
+  },
+  {
     "team": "Deportivo Alavés",
     "played": 10,
     "gf": 8,
     "ga": 14,
-    "source": "FemGol",
-    "points": 11
-  },
-  {
-    "team": "Granada CF",
-    "played": 10,
-    "gf": 9,
-    "ga": 16,
     "source": "FemGol",
     "points": 11
   },
@@ -121,10 +121,10 @@
   },
   {
     "team": "VCF Femenino",
-    "played": 10,
+    "played": 11,
     "gf": 8,
     "ga": 19,
     "source": "FemGol",
-    "points": 6
+    "points": 7
   }
 ]
