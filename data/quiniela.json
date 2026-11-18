@@ -1,83 +1,83 @@
 {
-  "journey": "22",
+  "journey": "23",
   "date": "Pròxima jornada",
   "matches": [
     {
       "number": 1,
-      "home": "Bosnia Herzegovina",
-      "away": "Rumanía"
+      "home": "Alavés",
+      "away": "Deportivo"
     },
     {
       "number": 2,
-      "home": "Ucrania",
-      "away": "Georgia"
+      "home": "Rayo Vallecano",
+      "away": "Valencia"
     },
     {
       "number": 3,
-      "home": "Gales",
-      "away": "Portugal"
+      "home": "Real Madrid",
+      "away": "Celta"
     },
     {
       "number": 4,
-      "home": "Hungría",
-      "away": "Irlanda Del Norte"
+      "home": "Barcelona",
+      "away": "Villarreal"
     },
     {
       "number": 5,
-      "home": "Polonia",
-      "away": "Suecia"
+      "home": "Racing Santander",
+      "away": "Real Sociedad"
     },
     {
       "number": 6,
-      "home": "República De Irlanda",
-      "away": "Kosovo"
+      "home": "Osasuna",
+      "away": "Málaga"
     },
     {
       "number": 7,
-      "home": "Real Madrid (F)",
-      "away": "Inter de Milán (F)"
+      "home": "Getafe",
+      "away": "At. Madrid"
     },
     {
       "number": 8,
-      "home": "Hacken (F)",
-      "away": "Manchester City (F)"
+      "home": "Tenerife",
+      "away": "Mallorca"
     },
     {
       "number": 9,
-      "home": "Chelsea (F)",
-      "away": "PSG (F)"
+      "home": "Sporting",
+      "away": "Las Palmas"
     },
     {
       "number": 10,
-      "home": "Juventus (F)",
-      "away": "Leuven (F)"
+      "home": "Girona",
+      "away": "Eibar"
     },
     {
       "number": 11,
-      "home": "Austria De Viena (F)",
-      "away": "Bayern De Múnich (F)"
+      "home": "Eibar (F)",
+      "away": "At. Madrid (F)"
     },
     {
       "number": 12,
-      "home": "Arsenal (F)",
-      "away": "Ol Lyonnes (F)"
+      "home": "Granada (F)",
+      "away": "Real Madrid (F)"
     },
     {
       "number": 13,
-      "home": "Barcelona (F)",
-      "away": "Servette (F)"
+      "home": "Real Sociedad (F)",
+      "away": "Sevilla (F)"
     },
     {
       "number": 14,
-      "home": "Benfica (F)",
-      "away": "Roma (F)"
+      "home": "Tenerife (F)",
+      "away": "Madrid CFF (F)"
     },
     {
       "number": 15,
-      "home": "Dinamarca",
-      "away": "Noruega"
+      "home": "Sevilla",
+      "away": "Betis"
     }
   ],
   "source": "Calendari de La Quiniela (partits del butlletí publicat)",
-  "updated": "2026-11-17T16:51:20.837876Z"
+  "updated": "2026-11-18T16:25:31.724312Z"
 }
