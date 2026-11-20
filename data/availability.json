@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-19T16:27:33.555643+00:00",
+  "updated": "2026-11-20T15:58:51.730859+00:00",
   "source": "Fonts públiques",
   "configured": true,
   "leagues": [],
@@ -17,6 +17,10 @@
     {
       "name": "Mundo Deportivo - Femení",
       "url": "https://www.mundodeportivo.com/futbol/femenino"
+    },
+    {
+      "name": "Sancionadas para la jornada 12 de Liga F: Gema Climent, tercera de seis",
+      "url": "https://futboltotal.futbol/league/primera-division-femenina/noticias/sancionadas-jornada-12-liga-f-climent"
     },
     {
       "name": "Sancionadas para la jornada 10 de Liga F: seis partidos a Gema Climent",
