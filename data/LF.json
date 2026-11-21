@@ -73,9 +73,9 @@
   },
   {
     "team": "Deportivo Abanca",
-    "played": 11,
-    "gf": 12,
-    "ga": 14,
+    "played": 12,
+    "gf": 13,
+    "ga": 16,
     "source": "FemGol",
     "points": 12
   },
@@ -96,6 +96,14 @@
     "points": 12
   },
   {
+    "team": "FC Badalona Women",
+    "played": 12,
+    "gf": 14,
+    "ga": 24,
+    "source": "FemGol",
+    "points": 12
+  },
+  {
     "team": "Deportivo Alavés",
     "played": 10,
     "gf": 8,
@@ -110,14 +118,6 @@
     "ga": 18,
     "source": "FemGol",
     "points": 10
-  },
-  {
-    "team": "FC Badalona Women",
-    "played": 11,
-    "gf": 12,
-    "ga": 23,
-    "source": "FemGol",
-    "points": 9
   },
   {
     "team": "VCF Femenino",
