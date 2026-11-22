@@ -9,19 +9,19 @@
   },
   {
     "team": "Real Madrid CF",
-    "played": 11,
-    "gf": 26,
-    "ga": 21,
+    "played": 12,
+    "gf": 31,
+    "ga": 22,
     "source": "FemGol",
-    "points": 24
+    "points": 27
   },
   {
     "team": "Atlético de Madrid",
-    "played": 11,
-    "gf": 24,
-    "ga": 13,
+    "played": 12,
+    "gf": 27,
+    "ga": 14,
     "source": "FemGol",
-    "points": 22
+    "points": 25
   },
   {
     "team": "Athletic Club",
@@ -48,28 +48,28 @@
     "points": 17
   },
   {
+    "team": "Logroño United",
+    "played": 12,
+    "gf": 17,
+    "ga": 17,
+    "source": "FemGol",
+    "points": 16
+  },
+  {
+    "team": "Real Sociedad",
+    "played": 12,
+    "gf": 15,
+    "ga": 19,
+    "source": "FemGol",
+    "points": 16
+  },
+  {
     "team": "RCD Espanyol de Barcelona",
     "played": 11,
     "gf": 15,
     "ga": 14,
     "source": "FemGol",
     "points": 15
-  },
-  {
-    "team": "Logroño United",
-    "played": 11,
-    "gf": 14,
-    "ga": 16,
-    "source": "FemGol",
-    "points": 13
-  },
-  {
-    "team": "Real Sociedad",
-    "played": 11,
-    "gf": 14,
-    "ga": 19,
-    "source": "FemGol",
-    "points": 13
   },
   {
     "team": "Deportivo Abanca",
@@ -81,17 +81,9 @@
   },
   {
     "team": "SD Eibar",
-    "played": 11,
-    "gf": 11,
-    "ga": 15,
-    "source": "FemGol",
-    "points": 12
-  },
-  {
-    "team": "Granada CF",
-    "played": 11,
-    "gf": 9,
-    "ga": 16,
+    "played": 12,
+    "gf": 12,
+    "ga": 18,
     "source": "FemGol",
     "points": 12
   },
@@ -104,18 +96,26 @@
     "points": 12
   },
   {
+    "team": "Granada CF",
+    "played": 12,
+    "gf": 10,
+    "ga": 21,
+    "source": "FemGol",
+    "points": 12
+  },
+  {
     "team": "Deportivo Alavés",
-    "played": 10,
-    "gf": 8,
-    "ga": 14,
+    "played": 11,
+    "gf": 9,
+    "ga": 17,
     "source": "FemGol",
     "points": 11
   },
   {
     "team": "Sevilla FC",
-    "played": 11,
+    "played": 12,
     "gf": 12,
-    "ga": 18,
+    "ga": 19,
     "source": "FemGol",
     "points": 10
   },
