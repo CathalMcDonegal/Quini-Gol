@@ -1,83 +1,83 @@
 {
-  "journey": "23",
+  "journey": "24",
   "date": "Pròxima jornada",
   "matches": [
     {
       "number": 1,
-      "home": "Alavés",
-      "away": "Deportivo"
+      "home": "Arsenal",
+      "away": "Borussia Dortmund"
     },
     {
       "number": 2,
-      "home": "Rayo Vallecano",
-      "away": "Valencia"
+      "home": "Feyenoord",
+      "away": "Oporto"
     },
     {
       "number": 3,
-      "home": "Real Madrid",
-      "away": "Celta"
+      "home": "Man. City",
+      "away": "Nápoles"
     },
     {
       "number": 4,
-      "home": "Barcelona",
-      "away": "Villarreal"
+      "home": "Real Madrid",
+      "away": "Psv"
     },
     {
       "number": 5,
-      "home": "Racing Santander",
-      "away": "Real Sociedad"
+      "home": "Slovan Bratislava",
+      "away": "Betis"
     },
     {
       "number": 6,
-      "home": "Osasuna",
-      "away": "Málaga"
+      "home": "Sabah",
+      "away": "Barcelona"
     },
     {
       "number": 7,
-      "home": "Getafe",
-      "away": "At. Madrid"
+      "home": "Slavia Praga",
+      "away": "Villarreal"
     },
     {
       "number": 8,
-      "home": "Tenerife",
-      "away": "Mallorca"
+      "home": "Brujas",
+      "away": "Liverpool"
     },
     {
       "number": 9,
-      "home": "Sporting",
-      "away": "Las Palmas"
+      "home": "Inter de Milán",
+      "away": "Stuttgart"
     },
     {
       "number": 10,
-      "home": "Girona",
-      "away": "Eibar"
+      "home": "PSG",
+      "away": "Roma"
     },
     {
       "number": 11,
-      "home": "Eibar (F)",
-      "away": "At. Madrid (F)"
+      "home": "Shakhtar D.",
+      "away": "Fenerbahçe"
     },
     {
       "number": 12,
-      "home": "Granada (F)",
-      "away": "Real Madrid (F)"
+      "home": "Sporting De Portugal",
+      "away": "Manchester United"
     },
     {
       "number": 13,
-      "home": "Real Sociedad (F)",
-      "away": "Sevilla (F)"
+      "home": "Celta",
+      "away": "Bournemouth"
     },
     {
       "number": 14,
-      "home": "Tenerife (F)",
-      "away": "Madrid CFF (F)"
+      "home": "Crystal Palace",
+      "away": "Real Sociedad"
     },
     {
       "number": 15,
-      "home": "Sevilla",
-      "away": "Betis"
+      "home": "At. Madrid",
+      "away": "Viking Fk"
     }
   ],
   "source": "Calendari de La Quiniela (partits del butlletí publicat)",
-  "updated": "2026-11-21T15:19:28.041986Z"
+  "updated": "2026-11-22T15:14:52.594665Z"
 }
