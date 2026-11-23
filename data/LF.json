@@ -1,11 +1,11 @@
 [
   {
     "team": "FC Barcelona",
-    "played": 11,
-    "gf": 42,
+    "played": 12,
+    "gf": 48,
     "ga": 6,
     "source": "FemGol",
-    "points": 28
+    "points": 31
   },
   {
     "team": "Real Madrid CF",
@@ -24,26 +24,26 @@
     "points": 25
   },
   {
+    "team": "Madrid CFF",
+    "played": 12,
+    "gf": 21,
+    "ga": 24,
+    "source": "FemGol",
+    "points": 20
+  },
+  {
     "team": "Athletic Club",
-    "played": 11,
+    "played": 12,
     "gf": 17,
-    "ga": 12,
+    "ga": 18,
     "source": "FemGol",
     "points": 19
   },
   {
     "team": "Costa Adeje Tenerife",
-    "played": 10,
-    "gf": 17,
-    "ga": 15,
-    "source": "FemGol",
-    "points": 17
-  },
-  {
-    "team": "Madrid CFF",
     "played": 11,
-    "gf": 18,
-    "ga": 24,
+    "gf": 17,
+    "ga": 18,
     "source": "FemGol",
     "points": 17
   },
