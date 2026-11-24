@@ -40,6 +40,14 @@
     "points": 19
   },
   {
+    "team": "RCD Espanyol de Barcelona",
+    "played": 12,
+    "gf": 17,
+    "ga": 14,
+    "source": "FemGol",
+    "points": 18
+  },
+  {
     "team": "Costa Adeje Tenerife",
     "played": 11,
     "gf": 17,
@@ -62,14 +70,6 @@
     "ga": 19,
     "source": "FemGol",
     "points": 16
-  },
-  {
-    "team": "RCD Espanyol de Barcelona",
-    "played": 11,
-    "gf": 15,
-    "ga": 14,
-    "source": "FemGol",
-    "points": 15
   },
   {
     "team": "Deportivo Abanca",
@@ -121,9 +121,9 @@
   },
   {
     "team": "VCF Femenino",
-    "played": 11,
+    "played": 12,
     "gf": 8,
-    "ga": 19,
+    "ga": 21,
     "source": "FemGol",
     "points": 7
   }
