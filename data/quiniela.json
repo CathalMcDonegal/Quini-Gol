@@ -1,83 +1,83 @@
 {
-  "journey": "24",
+  "journey": "25",
   "date": "Pròxima jornada",
   "matches": [
     {
       "number": 1,
-      "home": "Arsenal",
-      "away": "Borussia Dortmund"
+      "home": "Betis",
+      "away": "Rayo Vallecano"
     },
     {
       "number": 2,
-      "home": "Feyenoord",
-      "away": "Oporto"
+      "home": "Málaga",
+      "away": "Athletic Club"
     },
     {
       "number": 3,
-      "home": "Man. City",
-      "away": "Nápoles"
+      "home": "Elche",
+      "away": "At. Madrid"
     },
     {
       "number": 4,
       "home": "Real Madrid",
-      "away": "Psv"
+      "away": "Alavés"
     },
     {
       "number": 5,
-      "home": "Slovan Bratislava",
-      "away": "Betis"
+      "home": "Valencia",
+      "away": "Osasuna"
     },
     {
       "number": 6,
-      "home": "Sabah",
+      "home": "Deportivo",
       "away": "Barcelona"
     },
     {
       "number": 7,
-      "home": "Slavia Praga",
+      "home": "Celta",
       "away": "Villarreal"
     },
     {
       "number": 8,
-      "home": "Brujas",
-      "away": "Liverpool"
+      "home": "Real Sociedad",
+      "away": "Sevilla"
     },
     {
       "number": 9,
-      "home": "Inter de Milán",
-      "away": "Stuttgart"
+      "home": "Las Palmas",
+      "away": "Andorra"
     },
     {
       "number": 10,
-      "home": "PSG",
-      "away": "Roma"
+      "home": "Albacete",
+      "away": "Tenerife"
     },
     {
       "number": 11,
-      "home": "Shakhtar D.",
-      "away": "Fenerbahçe"
+      "home": "Eibar",
+      "away": "Burgos"
     },
     {
       "number": 12,
-      "home": "Sporting De Portugal",
-      "away": "Manchester United"
+      "home": "Granada",
+      "away": "Ceuta"
     },
     {
       "number": 13,
-      "home": "Celta",
-      "away": "Bournemouth"
+      "home": "Mallorca",
+      "away": "Castellón"
     },
     {
       "number": 14,
-      "home": "Crystal Palace",
-      "away": "Real Sociedad"
+      "home": "Almería",
+      "away": "Sporting"
     },
     {
       "number": 15,
-      "home": "At. Madrid",
-      "away": "Viking Fk"
+      "home": "Espanyol",
+      "away": "Getafe"
     }
   ],
   "source": "Calendari de La Quiniela (partits del butlletí publicat)",
-  "updated": "2026-11-24T18:51:55.855187Z"
+  "updated": "2026-11-25T17:56:18.914417Z"
 }
